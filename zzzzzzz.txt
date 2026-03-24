@@ -1,0 +1,23 @@
+testAdmin@gmail.com	-	admin123
+testUser@gmail.com	-	user1234
+
+
+CREATE TABLE teams (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    logo VARCHAR(255),
+    car_image VARCHAR(255)
+);
+
+CREATE TABLE drivers (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL,
+    surname VARCHAR(100) NOT NULL,
+    shortName VARCHAR(10),
+    number INT,
+    image VARCHAR(255),
+    team_id INT,
+    FOREIGN KEY (team_id) REFERENCES teams(id)
+        ON DELETE SET NULL
+        ON UPDATE CASCADE
+);
