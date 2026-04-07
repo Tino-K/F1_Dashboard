@@ -1,147 +1,133 @@
 :root {
-    --primary-red: #e10600;
-    --dark-red: #8b0000;
-    --light-red: #ff3b30;
-    --gold: #ffd700;
-    --dark-gold: #b8860b;
-    --light-gold: #fffacd;
-
     --bg-color: #ffffff;
-    --text-color: #333333;
-    --card-bg: #f8f9fa;
-    --header-bg: #f1f1f1;
     --border-color: #dddddd;
-    --shadow-color: rgba(0, 0, 0, 0.1);
+    --card-bg: #f8f9fa;
+    --dark-gold: #b8860b;
+    --dark-red: #8b0000;
     --dashboard-bg: #f1f1f1;
+    --gold: #ffd700;
+    --header-bg: #f1f1f1;
+    --light-gold: #fffacd;
+    --light-red: #ff3b30;
     --nav-btn-padding: 14px 10px;
-    --nav-icon-red: var(--primary-red);
     --nav-icon-gold: var(--gold);
+    --nav-icon-red: var(--primary-red);
+    --primary-red: #e10600;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --text-color: #333333;
 }
 
 .dark-theme {
     --bg-color: #121212;
-    --text-color: #f1f1f1;
-    --card-bg: #1e1e1e;
-    --header-bg: #2a2a2a;
     --border-color: #444444;
-    --shadow-color: rgba(0, 0, 0, 0.5);
+    --card-bg: #1e1e1e;
     --dashboard-bg: #2c3e50;
-
+    --header-bg: #2a2a2a;
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --text-color: #f1f1f1;
 }
 
 * {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
     transition: background-color 0.3s, color 0.3s;
 }
 
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: var(--bg-color);
     color: var(--text-color);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
     min-height: 100vh;
     padding: 20px;
-    background-image:
-        radial-gradient(circle at 20% 80%, rgba(225, 6, 0, 0.05) 0%, transparent 20%),
-        radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.05) 0%, transparent 20%);
 }
 
+/* HEADER & LOGO */
 .header {
+    align-items: center;
+    border-bottom: 3px solid var(--primary-red);
     display: flex;
     justify-content: space-between;
-    align-items: center;
     margin-bottom: 30px;
     padding-bottom: 20px;
-    border-bottom: 3px solid var(--primary-red);
 }
 
 .logo {
-    display: flex;
     align-items: center;
-    margin-top: 20px;
+    display: flex;
     margin-right: 30px;
+    margin-top: 20px;
 }
 
 .logo-icon {
-    font-size: 2.5rem;
     color: var(--primary-red);
+    font-size: 2.5rem;
 }
 
 .logo-text {
+    background: linear-gradient(to right, var(--primary-red) 50%, var(--gold) 50%);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
     font-size: 2rem;
     font-weight: 900;
-    background: linear-gradient(to right, var(--primary-red) 50%, var(--gold) 50%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-    text-transform: uppercase;
     letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
-.user-info {
-    display: flex;
+.user-badge {
     align-items: center;
-    gap: 15px;
-}
-
-.admin-badge {
     background: linear-gradient(to right, var(--primary-red), var(--dark-red));
-    color: white;
-    padding: 8px 15px;
     border-radius: 20px;
-    font-weight: bold;
+    color: white;
     display: flex;
-    align-items: center;
+    font-weight: bold;
     gap: 8px;
+    padding: 8px 15px;
+    cursor: pointer;
 }
 
+/* CONTAINER & TITLES */
 .container {
-    max-width: 1200px;
     margin: 0 auto;
+    max-width: 1200px;
 }
 
 .page-title {
-    font-size: 1.8rem;
-    margin-bottom: 25px;
+    align-items: center;
     color: var(--text-color);
     display: flex;
-    justify-items: center;
-    align-items: center;
+    font-size: 1.8rem;
     gap: 15px;
+    justify-items: center;
+    margin-bottom: 25px;
 }
 
 .page-title span {
     color: var(--primary-red);
 }
 
-.add-user {
-    display: block;
-    gap: 15px;
-    margin-bottom: 30px;
-    flex-wrap: wrap;
-}
-
+/* BUTTONS */
 .action-btn {
-    background: linear-gradient(to right, var(--primary-red), var(--dark-red));
-    color: white;
-    border: none;
-    padding: 12px 24px;
-    border-radius: 8px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s;
-    display: flex;
     align-items: center;
-    gap: 8px;
+    background: linear-gradient(to right, var(--primary-red), var(--dark-red));
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    display: flex;
     font-size: 1rem;
+    font-weight: 600;
+    gap: 8px;
+    padding: 12px 24px;
+    transition: all 0.3s;
 }
 
 .action-btn:hover {
     background: linear-gradient(to right, var(--light-red), var(--primary-red));
-    transform: translateY(-2px);
     box-shadow: 0 5px 15px rgba(225, 6, 0, 0.3);
+    transform: translateY(-2px);
 }
 
 .add-btn {
@@ -152,19 +138,45 @@ body {
     background: linear-gradient(to right, #27ae60, #219653);
 }
 
+.add-user {
+    display: block;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.refresh-btn {
+    align-items: center;
+    background: var(--primary-red);
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    display: inline-flex;
+    font-weight: 600;
+    gap: 8px;
+    padding: 10px 20px;
+}
+
+.refresh-btn:hover {
+    background: var(--light-red);
+    transform: translateY(-2px);
+}
+
+/* TABLE */
 .table-container {
     background-color: var(--card-bg);
     border-radius: 12px;
-    overflow: hidden;
     box-shadow: 0 5px 20px var(--shadow-color);
     margin-bottom: 30px;
+    overflow: hidden;
     overflow-x: auto;
 }
 
 table {
-    width: 100%;
     border-collapse: collapse;
     min-width: 800px;
+    width: 100%;
 }
 
 thead {
@@ -172,12 +184,12 @@ thead {
 }
 
 th {
+    border-bottom: 3px solid var(--primary-red);
+    color: var(--text-color);
+    font-size: 1.1rem;
+    font-weight: 700;
     padding: 18px 20px;
     text-align: left;
-    font-weight: 700;
-    color: var(--text-color);
-    border-bottom: 3px solid var(--primary-red);
-    font-size: 1.1rem;
 }
 
 td {
@@ -193,6 +205,7 @@ tbody tr:last-child td {
     border-bottom: none;
 }
 
+/* ACTION ICONS */
 .action-icons {
     display: flex;
     gap: 12px;
@@ -202,15 +215,15 @@ tbody tr:last-child td {
 .delete-icon,
 .save-icon,
 .cancel-icon {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    display: flex;
     align-items: center;
-    justify-content: center;
+    border-radius: 50%;
     cursor: pointer;
-    transition: all 0.3s;
+    display: flex;
     font-size: 1.1rem;
+    height: 36px;
+    justify-content: center;
+    transition: all 0.3s;
+    width: 36px;
 }
 
 .edit-icon {
@@ -253,6 +266,7 @@ tbody tr:last-child td {
     color: white;
 }
 
+/* FORMS & INPUTS */
 input[type="number"] {
     appearance: textfield;
 }
@@ -263,14 +277,14 @@ input[type="password"],
 input[type="number"],
 textarea,
 select {
-    width: 100%;
-    padding: 12px 15px;
+    background-color: var(--bg-color);
     border: 2px solid var(--border-color);
     border-radius: 6px;
-    background-color: var(--bg-color);
     color: var(--text-color);
     font-size: 1rem;
+    padding: 12px 15px;
     transition: all 0.3s;
+    width: 100%;
 }
 
 textarea {
@@ -281,16 +295,17 @@ input:focus,
 textarea:focus,
 select:focus {
     border-color: var(--primary-red);
-    outline: none;
     box-shadow: 0 0 0 3px rgba(225, 6, 0, 0.1);
+    outline: none;
 }
 
+/* ROLE BADGES */
 .role-badge {
-    padding: 6px 15px;
     border-radius: 20px;
+    display: inline-block;
     font-size: 0.9rem;
     font-weight: 600;
-    display: inline-block;
+    padding: 6px 15px;
 }
 
 .role-user {
@@ -303,27 +318,29 @@ select:focus {
     color: #c0392b;
 }
 
+/* FOOTER ACTIONS */
 .footer-actions {
+    align-items: center;
+    border-top: 1px solid var(--border-color);
     display: flex;
     justify-content: space-between;
-    align-items: center;
     margin-top: 30px;
     padding-top: 20px;
-    border-top: 1px solid var(--border-color);
 }
 
+/* THEME TOGGLE */
 .theme-toggle {
+    align-items: center;
     background-color: var(--card-bg);
     border: 2px solid var(--border-color);
     border-radius: 30px;
-    width: 70px;
-    height: 35px;
+    cursor: pointer;
     display: flex;
-    align-items: center;
+    height: 35px;
     justify-content: space-between;
     padding: 0 8px;
-    cursor: pointer;
     position: relative;
+    width: 70px;
 }
 
 .theme-toggle i {
@@ -332,55 +349,77 @@ select:focus {
 }
 
 .toggle-circle {
-    position: absolute;
-    width: 27px;
-    height: 27px;
     background-color: var(--primary-red);
     border-radius: 50%;
+    height: 27px;
     left: 4px;
+    position: absolute;
     transition: transform 0.3s;
+    width: 27px;
 }
 
 .dark .toggle-circle {
-    transform: translateX(34px);
     background-color: var(--gold);
+    transform: translateX(34px);
 }
 
+/* MODAL */
 .modal-overlay {
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.7);
     display: none;
+    height: 100%;
+    justify-content: center;
+    left: 0;
     position: fixed;
     top: 0;
-    left: 0;
     width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
     z-index: 1000;
-    align-items: center;
-    justify-content: center;
 }
 
 .modal {
     background-color: var(--card-bg);
     border-radius: 15px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    max-height: 90vh;
+    overflow-y: auto;
     width: 90%;
     max-width: 500px;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    overflow: hidden;
 }
 
 .modal-header {
     background-color: var(--header-bg);
-    padding: 25px 30px;
     border-bottom: 1px solid var(--border-color);
+    padding: 25px 30px;
 }
 
 .modal-header h3 {
-    font-size: 1.5rem;
     color: var(--text-color);
+    font-size: 1.5rem;
 }
 
 .modal-body {
-    padding: 30px;
+    max-height: 60vh;
+    overflow-y: auto;
+    padding: 20px 25px;
+}
+
+.modal input[type="text"],
+.modal input[type="url"],
+.modal input[type="number"],
+td textarea {
+    font-size: 1rem;
+    padding: 12px 15px;
+    width: 100%;
+}
+
+.modal-footer {
+    background-color: var(--header-bg);
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: 15px;
+    justify-content: flex-end;
+    padding: 20px 30px;
 }
 
 .form-group {
@@ -388,67 +427,59 @@ select:focus {
 }
 
 .form-group label {
-    display: block;
-    margin-bottom: 8px;
-    font-weight: 600;
     color: var(--text-color);
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
 }
 
-.modal-footer {
-    padding: 20px 30px;
-    background-color: var(--header-bg);
-    border-top: 1px solid var(--border-color);
-    display: flex;
-    justify-content: flex-end;
-    gap: 15px;
-}
-
+/* NAVIGATION */
 .nav-container {
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
     margin-bottom: 40px;
     width: 100%;
-    flex-wrap: wrap;
 }
 
 .nav-link {
-    text-decoration: none;
     flex: 1;
     min-width: 180px;
+    text-decoration: none;
 }
 
 .nav-btn {
-    width: 100%;
+    align-items: center;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    font-weight: 600;
+    gap: 8px;
     justify-content: center;
     padding: var(--nav-btn-padding);
-    border: none;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 600;
-    cursor: pointer;
     transition: all 0.3s ease;
-    border-radius: 8px;
+    width: 100%;
 }
 
 .nav-btn-dashboard {
     background: var(--dashboard-bg);
-    color: var(--text-color);
     border: none;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    color: var(--text-color);
 }
 
 .nav-btn-dashboard:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
     border: 2px solid var(--primary-red);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    transform: translateY(-2px);
 }
 
 .nav-btn-default {
     background: var(--header-bg);
-    color: var(--text-color);
     border: 2px solid var(--border-color);
     box-shadow: none;
+    color: var(--text-color);
 }
 
 .nav-btn-default i {
@@ -474,62 +505,78 @@ select:focus {
     border-color: var(--border-color);
 }
 
-.dark-theme .page-title {
-    border-color: var(--border-color);
-}
-
 .dark-theme .nav-btn-default:hover {
     background: #3a3a3a;
     border-color: var(--primary-red);
 }
 
+.dark-theme .page-title {
+    border-color: var(--border-color);
+}
+
+/* IMAGE PREVIEWS */
 .team-logo-preview {
-    max-width: 60px;
-    max-height: 60px;
     border-radius: 8px;
     margin-top: 20px;
+    max-height: 60px;
+    max-width: 60px;
 }
 
 .driver-image-preview {
-    max-width: 60px;
-    max-height: 60px;
     border-radius: 50%;
+    max-height: 60px;
+    max-width: 60px;
     object-fit: cover;
 }
 
 .team-badge {
-    display: flex;
     align-items: center;
+    display: flex;
     gap: 8px;
 }
 
 .team-badge img {
-    max-width: 30px;
     max-height: 30px;
+    max-width: 30px;
     object-fit: contain;
 }
 
 td .driver-number {
-    font-weight: bold;
-    font-family: 'F1', 'Segoe UI', monospace;
     background: var(--border-color);
-    padding: 2px 8px;
     border-radius: 4px;
     display: inline-block;
+    font-family: 'F1', 'Segoe UI', monospace;
+    font-weight: bold;
+    padding: 2px 8px;
 }
 
 .car-image-preview {
-    max-width: 250px;
     max-height: 60px;
+    max-width: 250px;
     object-fit: cover;
 }
 
 .edit-image-preview {
-    max-width: 100%;
     height: auto;
     margin-top: 5px;
+    max-width: 100%;
 }
 
+.circuit-map-preview {
+    border-radius: 4px;
+    max-height: 60px;
+    max-width: 100px;
+    object-fit: cover;
+}
+
+.edit-map-preview {
+    border-radius: 4px;
+    height: auto;
+    margin-top: 5px;
+    max-width: 100%;
+}
+
+/* DRIVERS & TEAMS */
 .drivers-list {
     display: flex;
     flex-direction: column;
@@ -538,14 +585,14 @@ td .driver-number {
 }
 
 .driver-item {
-    display: flex;
     align-items: center;
+    background-color: var(--card-bg);
+    border-left: 3px solid var(--primary-red);
+    border-radius: 4px;
+    display: flex;
     gap: 8px;
     padding: 4px 8px;
     padding-right: 50px;
-    background-color: var(--card-bg);
-    border-radius: 4px;
-    border-left: 3px solid var(--primary-red);
 }
 
 .driver-name-line {
@@ -560,28 +607,245 @@ td .driver-number {
 }
 
 .driver-last-name {
-    font-weight: 600;
     font-size: 1rem;
+    font-weight: 600;
 }
 
 .no-drivers {
+    background-color: var(--card-bg);
+    border-radius: 4px;
     color: var(--border-color);
     font-style: italic;
     padding: 8px;
     text-align: center;
-    background-color: var(--card-bg);
-    border-radius: 4px;
 }
 
 .team-info {
-    display: flex;
     align-items: center;
+    display: flex;
     gap: 12px;
 }
 
 .team-name {
     font-weight: 600;
     width: 200px;
+}
+
+/* STANDINGS */
+.standings-container {
+    margin-bottom: 40px;
+}
+
+.standings-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 5px 20px var(--shadow-color);
+    margin-bottom: 40px;
+    overflow: hidden;
+}
+
+.standings-header {
+    background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
+    color: white;
+    padding: 20px;
+}
+
+.standings-header p {
+    margin: 5px 0 0;
+}
+
+.standings-table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.standings-table th,
+.standings-table td {
+    border-bottom: 1px solid var(--border-color);
+    padding: 12px 10px;
+    text-align: left;
+}
+
+.standings-table th {
+    background-color: var(--header-bg);
+    color: var(--primary-red);
+    font-weight: 600;
+}
+
+.standings-table tr:hover {
+    background-color: rgba(225, 6, 0, 0.05);
+}
+
+.position-1 {
+    background-color: rgba(255, 215, 0, 0.15);
+    font-weight: bold;
+}
+
+.position-2 {
+    background-color: rgba(192, 192, 192, 0.1);
+}
+
+.position-3 {
+    background-color: rgba(205, 127, 50, 0.1);
+}
+
+.champion-badge {
+    background: var(--gold);
+    border-radius: 20px;
+    color: #333;
+    display: inline-block;
+    font-size: 0.7rem;
+    font-weight: bold;
+    margin-left: 8px;
+    padding: 2px 8px;
+}
+
+.points {
+    font-size: 1.1rem;
+    font-weight: bold;
+}
+
+.driver-name,
+.constructor-name {
+    font-weight: 600;
+}
+
+/* SEASON SELECTOR */
+.season-selector {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 30px;
+}
+
+.season-selector select {
+    background: var(--bg-color);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    color: var(--text-color);
+    font-size: 1rem;
+    padding: 10px 15px;
+}
+
+/* LOADING & RACES */
+.loading-spinner {
+    padding: 40px;
+    text-align: center;
+}
+
+.loading-spinner i {
+    animation: spin 1s linear infinite;
+    color: var(--primary-red);
+    font-size: 3rem;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.race-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    box-shadow: 0 2px 10px var(--shadow-color);
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: all 0.3s;
+}
+
+.race-card:hover {
+    box-shadow: 0 5px 20px var(--shadow-color);
+    transform: translateY(-2px);
+}
+
+.race-header {
+    align-items: center;
+    background: linear-gradient(135deg, var(--primary-red), var(--dark-red));
+    color: white;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    padding: 15px 20px;
+}
+
+.race-header h3 {
+    font-size: 1.2rem;
+    margin: 0;
+}
+
+.race-header .race-date {
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+.race-details {
+    border-top: 1px solid var(--border-color);
+    display: none;
+    padding: 20px;
+}
+
+.race-details.active {
+    display: block;
+}
+
+.race-info {
+    border-bottom: 1px solid var(--border-color);
+    display: grid;
+    gap: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+}
+
+.info-item {
+    align-items: center;
+    display: flex;
+    gap: 10px;
+}
+
+.info-item i {
+    color: var(--primary-red);
+    font-size: 1.2rem;
+    width: 25px;
+}
+
+.results-table-container {
+    margin-top: 20px;
+    overflow-x: auto;
+}
+
+.results-table {
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    width: 100%;
+}
+
+.results-table th,
+.results-table td {
+    border-bottom: 1px solid var(--border-color);
+    padding: 12px 8px;
+    text-align: left;
+}
+
+.results-table th {
+    background-color: var(--header-bg);
+    color: var(--primary-red);
+    font-weight: 600;
+}
+
+.no-races {
+    color: var(--text-color);
+    opacity: 0.7;
+    padding: 40px;
+    text-align: center;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+    .standings-container {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media screen and (max-width: 768px) {
@@ -596,8 +860,8 @@ td .driver-number {
     }
 
     .action-btn {
-        padding: 10px 18px;
         font-size: 0.9rem;
+        padding: 10px 18px;
     }
 
     th,
@@ -615,8 +879,63 @@ td .driver-number {
     }
 
     .nav-btn {
-        padding: 12px 8px;
         font-size: 0.95rem;
+        padding: 12px 8px;
+    }
+
+    .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    table {
+        min-width: 900px;
+    }
+
+    td input[type="text"],
+    td input[type="url"],
+    td input[type="number"],
+    td textarea {
+        font-size: 0.9rem;
+        min-width: 120px;
+        padding: 8px 10px;
+    }
+
+    .edit_name,
+    .edit_country {
+        min-width: 140px;
+    }
+
+    .edit_lengthKM,
+    .edit_firstGP,
+    .edit_numberOfLaps,
+    .edit_raceDistance {
+        min-width: 80px;
+    }
+
+    .edit_circuitMapUrl {
+        min-width: 150px;
+    }
+}
+
+@media screen and (max-width: 600px) {
+    .footer-actions {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .footer-actions div:first-child {
+        width: 100%;
+    }
+
+    .add-user {
+        width: 100%;
+    }
+
+    .add-user .action-btn {
+        justify-content: center;
+        width: 100%;
     }
 }
 
@@ -629,9 +948,9 @@ td .driver-number {
         font-size: 1.6rem;
     }
 
-    .admin-badge {
-        padding: 6px 12px;
+    .user-badge {
         font-size: 0.9rem;
+        padding: 6px 12px;
     }
 
     .action-icons {
@@ -643,9 +962,9 @@ td .driver-number {
     .delete-icon,
     .save-icon,
     .cancel-icon {
-        width: 32px;
-        height: 32px;
         font-size: 1rem;
+        height: 32px;
+        width: 32px;
     }
 
     .modal {
@@ -665,106 +984,7 @@ td .driver-number {
     }
 
     .nav-btn {
+        justify-content: center;
         padding: 12px 10px;
-        justify-content: center;
-    }
-}
-
-/* Fix for circuit map preview */
-.circuit-map-preview {
-    max-width: 100px;
-    max-height: 60px;
-    border-radius: 4px;
-    object-fit: cover;
-    display: block;
-}
-
-.edit-map-preview {
-    max-width: 100%;
-    height: auto;
-    margin-top: 5px;
-    border-radius: 4px;
-}
-
-/* Fix for table on mobile */
-@media screen and (max-width: 768px) {
-    .table-container {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-    }
-
-    table {
-        min-width: 900px;
-        /* Slightly wider to accommodate all columns */
-    }
-
-    td input[type="text"],
-    td input[type="url"],
-    td input[type="number"],
-    td textarea {
-        min-width: 120px;
-        padding: 8px 10px;
-        font-size: 0.9rem;
-    }
-
-    /* Fix for edit mode inputs */
-    .edit_name,
-    .edit_country {
-        min-width: 140px;
-    }
-
-    .edit_lengthKM,
-    .edit_firstGP,
-    .edit_numberOfLaps,
-    .edit_raceDistance {
-        min-width: 80px;
-    }
-
-    .edit_circuitMapUrl {
-        min-width: 150px;
-    }
-}
-
-/* Better modal styling */
-.modal {
-    max-height: 90vh;
-    overflow-y: auto;
-}
-
-.modal-body {
-    max-height: 60vh;
-    overflow-y: auto;
-    padding: 20px 25px;
-}
-
-/* Fix form inputs in modal */
-.modal input[type="text"],
-.modal input[type="url"],
-.modal input[type="number"],
-td textarea {
-    width: 100%;
-    padding: 12px 15px;
-    font-size: 1rem;
-}
-
-/* Fix for footer actions on mobile */
-@media screen and (max-width: 600px) {
-    .footer-actions {
-        flex-direction: column;
-        gap: 15px;
-        text-align: center;
-    }
-
-    .footer-actions div:first-child {
-        width: 100%;
-    }
-
-    .add-user {
-        width: 100%;
-    }
-
-    .add-user .action-btn {
-        width: 100%;
-        justify-content: center;
     }
 }

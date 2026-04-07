@@ -6,7 +6,7 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== "admin") {
     exit();
 }
 
-require_once "../config.php";
+require_once "./config.php";
 
 $rezultat = mysqli_query($conn, "SELECT * FROM users ORDER BY id DESC");
 ?>

@@ -125,22 +125,10 @@ $totalCircuits = mysqli_num_rows($result);
             </div>
             <div class="logo-text">F1 Dashboard</div>
         </div>
-
-        <div class="user-info">
-            <div class="theme-toggle" id="themeToggle">
-                <i class="fas fa-sun"></i>
-                <i class="fas fa-moon"></i>
-                <div class="toggle-circle"></div>
-            </div>
-            <div class="admin-badge">
-                <i class="fas fa-user-shield"></i>
-                <span><?= htmlspecialchars($_SESSION["name"]) ?></span>
-            </div>
+        <div class="user-badge" onclick="window.location.href='../userOptions.php'">
+            <i class="fas fa-user-shield"></i>
+            <span><?= htmlspecialchars($_SESSION["name"]) ?></span>
         </div>
-        <button class="action-btn" onclick="window.location.href='../logout.php'">
-            <i class="fas fa-sign-out-alt"></i>
-            <span>Logout</span>
-        </button>
     </div>
 
     <div class="container">

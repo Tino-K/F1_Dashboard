@@ -21,3 +21,15 @@ CREATE TABLE drivers (
         ON DELETE SET NULL
         ON UPDATE CASCADE
 );
+
+
+
+<div class="theme-toggle" id="themeToggle">
+                <i class="fas fa-sun"></i>
+                <i class="fas fa-moon"></i>
+                <div class="toggle-circle"></div>
+            </div>
+                    <button class="action-btn" onclick="window.location.href='../logout.php'">
+            <i class="fas fa-sign-out-alt"></i>
+            <span>Logout</span>
+        </button>
