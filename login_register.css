@@ -513,6 +513,7 @@ header {
 .submit-btn:active {
     transform: translateY(0);
 }
+
 /* Footer */
 footer {
     background-color: var(--header-bg);
@@ -524,6 +525,33 @@ footer {
 .footer-text {
     color: var(--text-color);
     font-size: 0.9rem;
+}
+
+.contact-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background-color: transparent;
+    color: var(--text-color);
+    text-decoration: none;
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 14px;
+    transition: all 0.3s;
+    margin-top: 10px;
+}
+
+.contact-btn:hover {
+    background-color: var(--primary-red);
+    border-color: var(--primary-red);
+    color: white;
+    transform: translateY(-2px);
+}
+
+.contact-btn i {
+    font-size: 16px;
 }
 
 /* Responsivnost */

@@ -8,6 +8,10 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== "admin") {
 
 require_once "../config.php";
 
+//Theme
+$email=$_SESSION['email'];
+$theme=mysqli_fetch_assoc(mysqli_query($conn,"SELECT users.theme_preference FROM users WHERE users.email = '$email'"));
+
 // Handle AJAX actions: delete, update, or add
 if (!empty($_POST['what'])) {
     if ($_POST['what'] === 'delete' && !empty($_POST['id'])) {
@@ -83,10 +87,10 @@ $totalCircuits = mysqli_num_rows($result);
 <head>
     <meta charset="UTF-8">
     <script>
-        // SPRJEČAVA FLASHBANG
+        // Theme
         (function() {
-            const savedTheme = localStorage.getItem('f1-theme');
-            if (savedTheme === 'dark-theme') {
+            const savedTheme = <?= json_encode($theme['theme_preference']); ?>;
+            if (savedTheme === 'dark') {
                 document.documentElement.classList.add('dark-theme');
                 document.documentElement.classList.add('dark');
             }
@@ -125,7 +129,7 @@ $totalCircuits = mysqli_num_rows($result);
             </div>
             <div class="logo-text">F1 Dashboard</div>
         </div>
-        <div class="user-badge" onclick="window.location.href='../userOptions.php'">
+        <div class="user-badge" onclick="window.location.href='../UserEdit/userOptions.php'">
             <i class="fas fa-user-shield"></i>
             <span><?= htmlspecialchars($_SESSION["name"]) ?></span>
         </div>
@@ -291,29 +295,6 @@ $totalCircuits = mysqli_num_rows($result);
     </div>
 
     <script>
-        // Theme toggle
-        const themeToggle = document.getElementById('themeToggle');
-        const body = document.body;
-
-        const savedTheme = localStorage.getItem('f1-theme');
-        if (savedTheme) {
-            body.classList.add(savedTheme);
-            if (savedTheme === 'dark-theme') {
-                themeToggle.classList.add('dark');
-            }
-        }
-
-        themeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark-theme');
-            themeToggle.classList.toggle('dark');
-
-            if (body.classList.contains('dark-theme')) {
-                localStorage.setItem('f1-theme', 'dark-theme');
-            } else {
-                localStorage.setItem('f1-theme', '');
-            }
-        });
-
         // Modal za dodavanje kruga
         const addCircuitBtn = document.getElementById('addCircuitBtn');
         const addCircuitModal = document.getElementById('addCircuitModal');

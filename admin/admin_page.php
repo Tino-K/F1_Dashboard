@@ -8,6 +8,10 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== "admin") {
 
 require_once "../config.php";
 
+//Theme
+$email=$_SESSION['email'];
+$theme=mysqli_fetch_assoc(mysqli_query($conn,"SELECT users.theme_preference FROM users WHERE users.email = '$email'"));
+
 $rezultat = mysqli_query($conn, "SELECT * FROM users ORDER BY id DESC");
 ?>
 <!DOCTYPE html>
@@ -16,17 +20,17 @@ $rezultat = mysqli_query($conn, "SELECT * FROM users ORDER BY id DESC");
 <head>
     <meta charset="UTF-8">
     <script>
-        // SPRJEČAVA FLASHBANG
+        // Theme
         (function() {
-            const savedTheme = localStorage.getItem('f1-theme');
-            if (savedTheme === 'dark-theme') {
+            const savedTheme = <?= json_encode($theme['theme_preference']); ?>;
+            if (savedTheme === 'dark') {
                 document.documentElement.classList.add('dark-theme');
                 document.documentElement.classList.add('dark');
             }
         })();
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-    <title>F1 Dashboard | Admin Panel</title>
+    <title>F1 Dashboard | User Management</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="admin.css">
     <link rel="shortcut icon" type="image/x-icon" href="../pictures/flagIcon.png" />
@@ -41,7 +45,7 @@ $rezultat = mysqli_query($conn, "SELECT * FROM users ORDER BY id DESC");
             </div>
             <div class="logo-text">F1 Dashboard</div>
         </div>
-        <div class="user-badge" onclick="window.location.href='../userOptions.php'">
+        <div class="user-badge" onclick="window.location.href='../UserEdit/userOptions.php'">
             <i class="fas fa-user-shield"></i>
             <span><?= htmlspecialchars($_SESSION["name"]) ?></span>
         </div>
@@ -185,29 +189,6 @@ $rezultat = mysqli_query($conn, "SELECT * FROM users ORDER BY id DESC");
     </div>
 
     <script>
-        // Theme toggle
-        const themeToggle = document.getElementById('themeToggle');
-        const body = document.body;
-
-        const savedTheme = localStorage.getItem('f1-theme');
-        if (savedTheme) {
-            body.classList.add(savedTheme);
-            if (savedTheme === 'dark-theme') {
-                themeToggle.classList.add('dark');
-            }
-        }
-
-        themeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark-theme');
-            themeToggle.classList.toggle('dark');
-
-            if (body.classList.contains('dark-theme')) {
-                localStorage.setItem('f1-theme', 'dark-theme');
-            } else {
-                localStorage.setItem('f1-theme', '');
-            }
-        });
-
         // Modal za dodavanje korisnika
         const addUserBtn = document.getElementById('addUserBtn');
         const addUserModal = document.getElementById('addUserModal');

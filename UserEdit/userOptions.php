@@ -1,42 +1,4 @@
-testAdmin@gmail.com	-	admin123
-testUser@gmail.com	-	user1234
-
-
-CREATE TABLE teams (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    logo VARCHAR(255),
-    car_image VARCHAR(255)
-);
-
-CREATE TABLE drivers (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(100) NOT NULL,
-    surname VARCHAR(100) NOT NULL,
-    shortName VARCHAR(10),
-    number INT,
-    image VARCHAR(255),
-    team_id INT,
-    FOREIGN KEY (team_id) REFERENCES teams(id)
-        ON DELETE SET NULL
-        ON UPDATE CASCADE
-);
-
-
-
-<div class="theme-toggle" id="themeToggle">
-                <i class="fas fa-sun"></i>
-                <i class="fas fa-moon"></i>
-                <div class="toggle-circle"></div>
-            </div>
-        <button class="action-btn" onclick="window.location.href='../logout.php'">
-            <i class="fas fa-sign-out-alt"></i>
-            <span>Logout</span>
-        </button>
-
-
-
-        <?php
+<?php
 session_start();
 
 if (!isset($_SESSION['email'])) {
@@ -57,6 +19,7 @@ $user = mysqli_fetch_assoc($result);
 
 // Theme preference
 $theme = $user['theme_preference'] ?? 'light';
+$bodyClass = ($theme === 'dark') ? 'dark-theme' : '';
 
 // Handle profile update
 $message = '';
@@ -101,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <link rel="shortcut icon" type="image/x-icon" href="../pictures/flagIcon.png" />
 </head>
 
-<body>
+<body class="<?= $bodyClass ?>">
     <div class="header">
         <div class="logo">
             <div class="logo-icon">
@@ -109,6 +72,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="logo-text">F1 Dashboard</div>
         </div>
+        <button onclick="history.back()" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Go Back
+        </button>
+
         <div class="header-right">
             <div class="theme-toggle" id="themeToggle">
                 <i class="fas fa-sun"></i>
@@ -201,7 +168,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                 <option value="">Prefer not to say</option>
                                 <option value="Male" <?= $user['gender'] === 'Male' ? 'selected' : '' ?>>Male</option>
                                 <option value="Female" <?= $user['gender'] === 'Female' ? 'selected' : '' ?>>Female</option>
-                                <option value="Other" <?= $user['gender'] === 'Other' ? 'selected' : '' ?>>Other</option>
                             </select>
                         </div>
 
@@ -225,6 +191,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     </div>
 
                     <div class="form-actions">
+                        <a href="../contact.php" class="btn">
+                            <i class="fas fa-headset"></i> Something went wrong? Contact the admin for help!
+                        </a>
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i>
                             Save Changes
@@ -240,97 +209,73 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <script>
-    // Theme toggle - FIXED
-    const themeToggle = document.getElementById('themeToggle');
-    const body = document.body;
+        const themeToggle = document.getElementById('themeToggle');
+        const body = document.body;
 
-    // Function to apply theme
-    function applyTheme(isDark) {
-        if (isDark) {
-            body.classList.add('dark-theme');
-            themeToggle.classList.add('dark');
-            localStorage.setItem('f1-theme', 'dark-theme');
-        } else {
-            body.classList.remove('dark-theme');
-            themeToggle.classList.remove('dark');
-            localStorage.setItem('f1-theme', '');
+        const dbTheme = <?= json_encode($theme); ?>;
+
+        function applyTheme(isDark) {
+            if (isDark) {
+                body.classList.add('dark-theme');
+                themeToggle.classList.add('dark');
+            } else {
+                body.classList.remove('dark-theme');
+                themeToggle.classList.remove('dark');
+            }
         }
-    }
 
-    // Load theme on page load - CHECK LOCALSTORAGE FIRST, THEN DATABASE
-    const savedLocalTheme = localStorage.getItem('f1-theme');
-    const dbTheme = <?= json_encode($theme); ?>;
-    
-    // Prioritize localStorage over database
-    if (savedLocalTheme === 'dark-theme') {
-        applyTheme(true);
-        // If localStorage says dark but database says light, update database
-        if (dbTheme !== 'dark') {
+        applyTheme(dbTheme === 'dark');
+
+        themeToggle.addEventListener('click', () => {
+            const isNowDark = !body.classList.contains('dark-theme');
+            applyTheme(isNowDark);
             $.ajax({
                 type: "POST",
                 url: "userUpdating.php",
-                data: { theme_preference: 'dark' },
+                data: {
+                    theme_preference: isNowDark ? 'dark' : 'light'
+                },
                 success: function(response) {
-                    console.log("Database synced with localStorage theme:", response);
+                    console.log("Theme saved to DB:", response);
+                },
+                error: function() {
+                    console.error("Failed to save theme.");
+                }
+            });
+        });
+
+        // Live avatar preview
+        const avatarUrlInput = document.getElementById('avatar_url');
+        const avatarPreview = document.getElementById('avatarPreview');
+
+        if (avatarUrlInput && avatarPreview) {
+            avatarUrlInput.addEventListener('input', function() {
+                const url = this.value;
+                if (url) {
+                    avatarPreview.src = url;
+                    avatarPreview.onerror = function() {
+                        this.src = '';
+                        this.alt = 'Invalid image URL';
+                    };
                 }
             });
         }
-    } else if (dbTheme === 'dark') {
-        applyTheme(true);
-    } else {
-        applyTheme(false);
-    }
 
-    // Theme toggle click handler
-    themeToggle.addEventListener('click', () => {
-        const isDark = !body.classList.contains('dark-theme');
-        applyTheme(isDark);
+        function resetForm() {
+            document.getElementById('profileForm').reset();
+        }
 
-        // Send theme preference to server
-        $.ajax({
-            type: "POST",
-            url: "userUpdating.php",
-            data: { theme_preference: isDark ? 'dark' : 'light' },
-            success: function(response) {
-                console.log("Theme updated in database:", response);
-            },
-            error: function() {
-                console.log("Error updating theme in database");
-            }
-        });
-    });
-
-    // Live avatar preview
-    const avatarUrlInput = document.getElementById('avatar_url');
-    const avatarPreview = document.getElementById('avatarPreview');
-
-    if (avatarUrlInput && avatarPreview) {
-        avatarUrlInput.addEventListener('input', function() {
-            const url = this.value;
-            if (url) {
-                avatarPreview.src = url;
-                avatarPreview.onerror = function() {
-                    this.src = '';
-                    this.alt = 'Invalid image URL';
-                };
-            }
-        });
-    }
-
-    function resetForm() {
-        document.getElementById('profileForm').reset();
-    }
-
-    // Auto-hide message after 5 seconds
-    const messageDiv = document.querySelector('.message');
-    if (messageDiv) {
-        setTimeout(() => {
-            messageDiv.style.opacity = '0';
+        // Auto-hide message after 5 seconds
+        const messageDiv = document.querySelector('.message');
+        if (messageDiv) {
             setTimeout(() => {
-                messageDiv.style.display = 'none';
-            }, 300);
-        }, 5000);
-    }
-</script>
+                messageDiv.style.opacity = '0';
+                setTimeout(() => {
+                    messageDiv.style.display = 'none';
+                }, 300);
+            }, 5000);
+        }
+    </script>
 </body>
+
 </html>
