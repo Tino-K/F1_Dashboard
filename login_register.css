@@ -1,3 +1,4 @@
+/* ===== ROOT VARIJABLE ===== */
 :root {
     /* Crveno-zlatna paleta boja */
     --primary-red: #e10600;
@@ -25,6 +26,7 @@
     --shadow-color: rgba(0, 0, 0, 0.5);
 }
 
+/* ===== GLOBAL STILOVI ===== */
 * {
     margin: 0;
     padding: 0;
@@ -40,12 +42,12 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background-image:
+    background-image: 
         radial-gradient(circle at 20% 80%, rgba(225, 6, 0, 0.05) 0%, transparent 20%),
         radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.05) 0%, transparent 20%);
 }
 
-/* Header s navigacijom */
+/* ===== HEADER ===== */
 header {
     background-color: var(--header-bg);
     padding: 15px 0;
@@ -93,6 +95,7 @@ header {
     font-weight: 500;
 }
 
+/* ===== THEME TOGGLE ===== */
 .theme-toggle {
     background-color: var(--card-bg);
     border: 2px solid var(--border-color);
@@ -127,7 +130,7 @@ header {
     background-color: var(--gold);
 }
 
-/* Glavni sadržaj */
+/* ===== GLAVNI SADRŽAJ ===== */
 .main-container {
     flex: 1;
     display: flex;
@@ -147,6 +150,7 @@ header {
     position: relative;
 }
 
+/* ===== FORM HEADER ===== */
 .form-header {
     background-color: var(--header-bg);
     padding: 25px 30px;
@@ -172,14 +176,13 @@ header {
     font-size: 1rem;
 }
 
-/* GUEST LINK NA DNU CONTAINERA */
+/* ===== GUEST LINK ===== */
 .guest-link-bottom {
     display: flex;
     justify-content: center;
     padding: 25px 30px;
     background-color: var(--header-bg);
     border-top: 1px solid var(--border-color);
-    margin-top: 0;
 }
 
 .guest-link {
@@ -205,7 +208,6 @@ header {
 
 .guest-link:active {
     transform: translateY(0);
-    box-shadow: 0 3px 10px rgba(255, 215, 0, 0.3);
 }
 
 .guest-link i {
@@ -222,6 +224,7 @@ header {
     font-weight: normal;
 }
 
+/* ===== FORM TABOVI ===== */
 .form-tabs {
     display: flex;
     background-color: var(--header-bg);
@@ -260,6 +263,7 @@ header {
     background-color: rgba(225, 6, 0, 0.1);
 }
 
+/* ===== FORM SADRŽAJ ===== */
 .form-content {
     padding: 40px 30px;
 }
@@ -278,7 +282,6 @@ header {
         opacity: 0;
         transform: translateY(10px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
@@ -305,9 +308,10 @@ header {
     background-color: var(--gold);
 }
 
+/* ===== FORM GRUPE ===== */
 .form-group {
-    margin-bottom: 20px;
     position: relative;
+    margin-bottom: 20px;
 }
 
 .form-group i {
@@ -315,15 +319,20 @@ header {
     left: 15px;
     top: 50%;
     transform: translateY(-50%);
-    color: var(--text-color);
-    opacity: 0.7;
+    color: var(--primary-red);
     z-index: 2;
 }
 
+.form-group textarea + i {
+    top: 20px;
+    transform: none;
+}
+
 .form-group input,
-.form-group select {
+.form-group select,
+.form-group textarea {
     width: 100%;
-    padding: 15px 15px 15px 45px;
+    padding: 12px 15px 12px 45px;
     border: 2px solid var(--border-color);
     border-radius: 8px;
     background-color: var(--bg-color);
@@ -332,7 +341,26 @@ header {
     transition: all 0.3s;
 }
 
-/* Poseban stil za password polja s eye ikonom */
+.form-group textarea {
+    padding-top: 15px;
+    resize: vertical;
+    min-height: 150px;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    border-color: var(--primary-red);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(225, 6, 0, 0.1);
+}
+
+.form-group input:focus + i,
+.form-group textarea:focus + i {
+    color: var(--primary-red);
+}
+
+/* ===== PASSWORD WRAPPER ===== */
 .password-wrapper {
     position: relative;
     display: flex;
@@ -341,7 +369,7 @@ header {
 
 .password-wrapper input {
     width: 100%;
-    padding: 15px 45px 15px 45px; /* Smanjio sam padding s desne strane */
+    padding: 15px 45px 15px 45px;
     border: 2px solid var(--border-color);
     border-radius: 8px;
     background-color: var(--bg-color);
@@ -378,23 +406,7 @@ header {
     background-color: rgba(225, 6, 0, 0.1);
 }
 
-.toggle-password:hover {
-    color: var(--primary-red);
-    opacity: 1;
-    background-color: rgba(225, 6, 0, 0.1);
-}
-
-.form-group input:focus,
-.form-group select:focus {
-    border-color: var(--primary-red);
-    outline: none;
-    box-shadow: 0 0 0 3px rgba(225, 6, 0, 0.1);
-}
-
-.form-group input:focus+i {
-    color: var(--primary-red);
-}
-
+/* ===== PASSWORD STRENGTH ===== */
 .password-strength {
     margin-top: 8px;
     font-size: 0.85rem;
@@ -415,7 +427,6 @@ header {
     height: 100%;
     width: 0%;
     transition: width 0.3s, background-color 0.3s;
-    background-color: var(--border-color);
 }
 
 .strength-text {
@@ -439,6 +450,7 @@ header {
     background-color: #2ed573;
 }
 
+/* ===== PASSWORD RULES ===== */
 .password-rules {
     margin-top: 10px;
     font-size: 0.8rem;
@@ -462,6 +474,9 @@ header {
 
 .password-rules li i {
     font-size: 0.7rem;
+    position: static;
+    transform: none;
+    color: inherit;
 }
 
 .rule-valid {
@@ -472,6 +487,7 @@ header {
     color: #ff4757;
 }
 
+/* ===== ERROR & SUCCESS MESSAGES ===== */
 .error-message {
     background-color: rgba(225, 6, 0, 0.1);
     color: var(--primary-red);
@@ -488,6 +504,29 @@ header {
     font-size: 1.2rem;
 }
 
+.success-message {
+    background: rgba(46, 204, 113, 0.2);
+    border-left: 4px solid #2ecc71;
+    padding: 12px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    color: #2ecc71;
+}
+
+.info-box {
+    background: var(--header-bg);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+    border-left: 4px solid var(--primary-red);
+}
+
+.info-box i {
+    color: var(--primary-red);
+    margin-right: 10px;
+}
+
+/* ===== SUBMIT BUTTON ===== */
 .submit-btn {
     width: 100%;
     padding: 16px;
@@ -502,6 +541,10 @@ header {
     margin-top: 10px;
     letter-spacing: 0.5px;
     text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
 }
 
 .submit-btn:hover {
@@ -514,7 +557,7 @@ header {
     transform: translateY(0);
 }
 
-/* Footer */
+/* ===== FOOTER ===== */
 footer {
     background-color: var(--header-bg);
     padding: 20px 0;
@@ -554,7 +597,29 @@ footer {
     font-size: 16px;
 }
 
-/* Responsivnost */
+/* ===== BACK BUTTON ===== */
+.back {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    padding: 12px 24px;
+    transition: all 0.3s;
+    background-color: var(--gold);
+    color: black;
+    margin-top: 20px;
+}
+
+.back:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(255, 215, 0, 0.3);
+}
+
+/* ===== RESPONSIVNOST ===== */
 @media (max-width: 768px) {
     .header-container {
         flex-direction: column;

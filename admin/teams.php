@@ -126,6 +126,12 @@ while ($driver = mysqli_fetch_assoc($driversQuery)) {
                     <span>User Management</span>
                 </button>
             </a>
+            <a href="admin_requests.php" class="nav-link">
+                <button class="nav-btn nav-btn-default">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Requests</span>
+                </button>
+            </a>
             <a href="circuits.php" class="nav-link">
                 <button class="nav-btn nav-btn-default">
                     <i class="fas fa-medal nav-icon-red"></i>

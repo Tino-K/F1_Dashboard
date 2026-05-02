@@ -72,9 +72,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="logo-text">F1 Dashboard</div>
         </div>
-        <button onclick="history.back()" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Go Back
-        </button>
+        <?php if (isset($_SESSION["role"]) !== "user"): ?>
+            <button onclick="window.location.href='../admin/admin_page.php'" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Go Back
+            </button>
+        <?php else: ?>
+            <button onclick="window.location.href='../user/user_page.php'" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Go Back
+            </button>
+        <?php endif; ?>
 
         <div class="header-right">
             <div class="theme-toggle" id="themeToggle">
@@ -209,6 +215,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </div>
 
     <script>
+        //Theme
         const themeToggle = document.getElementById('themeToggle');
         const body = document.body;
 

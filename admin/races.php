@@ -62,6 +62,12 @@ $selectedSeason = isset($_GET['season']) ? (int)$_GET['season'] : $currentYear;
                     <span>User Management</span>
                 </button>
             </a>
+            <a href="admin_requests.php" class="nav-link">
+                <button class="nav-btn nav-btn-default">
+                    <i class="fas fa-clipboard-list"></i>
+                    <span>Requests</span>
+                </button>
+            </a>
             <a href="circuits.php" class="nav-link">
                 <button class="nav-btn nav-btn-default">
                     <i class="fas fa-medal nav-icon-red"></i>
@@ -112,9 +118,6 @@ $selectedSeason = isset($_GET['season']) ? (int)$_GET['season'] : $currentYear;
             <button class="refresh-btn" id="refreshRacesBtn">
                 <i class="fas fa-sync-alt"></i> Load Races
             </button>
-            <span style="opacity: 0.7;">
-                <i class="fas fa-info-circle"></i> Data from Ergast API
-            </span>
         </div>
 
         <!-- Races Container -->

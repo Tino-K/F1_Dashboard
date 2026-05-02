@@ -150,7 +150,7 @@ body {
     margin-bottom: 30px;
 }
 
-.refresh-btn {
+.refresh-btn, .searchBtn {
     align-items: center;
     background: var(--primary-red);
     border: none;
@@ -413,9 +413,12 @@ td textarea {
 }
 
 .nav-link {
-    flex: 1;
+    flex: 1 1 calc(20% - 10px);
     min-width: 180px;
-    text-decoration: none;
+}
+
+.nav-link:nth-child(-n+2) {
+    flex: 1 1 calc(50% - 10px);
 }
 
 .nav-btn {
@@ -957,4 +960,32 @@ td .driver-number {
         justify-content: center;
         padding: 12px 10px;
     }
+}
+
+.filter-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+}
+
+.filter-bar label{
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    width: 60%;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 5px;
 }
