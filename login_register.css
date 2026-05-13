@@ -1,6 +1,4 @@
-/* ===== ROOT VARIJABLE ===== */
 :root {
-    /* Crveno-zlatna paleta boja */
     --primary-red: #e10600;
     --dark-red: #8b0000;
     --light-red: #ff3b30;
@@ -8,7 +6,6 @@
     --dark-gold: #b8860b;
     --light-gold: #fffacd;
 
-    /* Teme - svijetla i tamna */
     --bg-color: #ffffff;
     --text-color: #333333;
     --card-bg: #f8f9fa;
@@ -21,7 +18,7 @@
     --bg-color: #121212;
     --text-color: #f1f1f1;
     --card-bg: #1e1e1e;
-    --header-bg: #2a2a2a;
+    --header-bg: #1c1c1c;
     --border-color: #444444;
     --shadow-color: rgba(0, 0, 0, 0.5);
 }

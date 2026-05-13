@@ -9,8 +9,8 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== "admin") {
 require_once "../config.php";
 
 //Theme
-$email=$_SESSION['email'];
-$theme=mysqli_fetch_assoc(mysqli_query($conn,"SELECT users.theme_preference FROM users WHERE users.email = '$email'"));
+$email = $_SESSION['email'];
+$theme = mysqli_fetch_assoc(mysqli_query($conn, "SELECT users.theme_preference FROM users WHERE users.email = '$email'"));
 
 // Handle AJAX actions: delete, update, or add
 if (!empty($_POST['what'])) {
@@ -63,22 +63,9 @@ if (!empty($_POST['what'])) {
         }
         exit;
     }
-
-    // NEW: Handle position updates
-    if ($_POST['what'] === 'updatePositions') {
-        $positions = json_decode($_POST['positions'], true);
-        foreach ($positions as $item) {
-            $id = (int)$item['id'];
-            $position = (int)$item['position'];
-            mysqli_query($conn, "UPDATE circuits SET position = $position WHERE id = $id");
-        }
-        echo json_encode(["success" => true]);
-        exit;
-    }
 }
 
-// CHANGED: Fetch all circuits ordered by position
-$result = mysqli_query($conn, "SELECT * FROM circuits ORDER BY position ASC, id ASC");
+$result = mysqli_query($conn, "SELECT * FROM circuits ORDER BY name ASC");
 $totalCircuits = mysqli_num_rows($result);
 ?>
 <!DOCTYPE html>
@@ -97,9 +84,7 @@ $totalCircuits = mysqli_num_rows($result);
         })();
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
-    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
-    <title>F1 Dashboard | Circuits Admin</title>
+    <title>F1 Dashboard | Circuits</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="admin.css">
     <link rel="shortcut icon" type="image/x-icon" href="../pictures/flagIcon.png" />
@@ -109,6 +94,7 @@ $totalCircuits = mysqli_num_rows($result);
             max-height: 60px;
             border-radius: 4px;
             object-fit: cover;
+            cursor: pointer;
         }
 
         .edit-map-preview {
@@ -116,6 +102,39 @@ $totalCircuits = mysqli_num_rows($result);
             height: auto;
             margin-top: 5px;
             border-radius: 4px;
+        }
+
+        .imageModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+            cursor: pointer;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .imageModal.active {
+            display: flex;
+        }
+
+        .modalImage-container {
+            position: relative;
+            max-width: 90vw;
+            max-height: 90vh;
+            text-align: center;
+        }
+
+        .modalImage {
+            max-width: 100%;
+            max-height: 85vh;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
         }
     </style>
 </head>
@@ -192,8 +211,6 @@ $totalCircuits = mysqli_num_rows($result);
             <table>
                 <thead>
                     <tr>
-                        <!-- NEW: Add drag handle column -->
-                        <th></th>
                         <th>Circuit Name</th>
                         <th>Length (KM)</th>
                         <th>First GP</th>
@@ -207,8 +224,6 @@ $totalCircuits = mysqli_num_rows($result);
                 <tbody id="circuitsTableBody">
                     <?php while ($row = mysqli_fetch_assoc($result)): ?>
                         <tr data-id="<?= $row['id'] ?>">
-                            <!-- NEW: Add drag handle cell -->
-                            <td class="drag-handle"><i class="fas fa-grip-vertical"></i></td>
                             <td class="name"><?= htmlspecialchars($row['name']) ?></td>
                             <td class="lengthKM"><?= $row['lengthKM'] ?></td>
                             <td class="firstGP"><?= $row['firstGP'] ?></td>
@@ -249,7 +264,11 @@ $totalCircuits = mysqli_num_rows($result);
         </div>
     </div>
 
-    <!-- Modal za dodavanje novog kruga -->
+    <!-- Modals -->
+    <div class="imageModal">
+        <img class="modalImage" src="" alt="Circuit Map">
+    </div>
+
     <div class="modal-overlay" id="addCircuitModal">
         <div class="modal" style="max-height: 90vh; overflow-y: auto;">
             <div class="modal-header">
@@ -301,137 +320,131 @@ $totalCircuits = mysqli_num_rows($result);
     </div>
 
     <script>
-        // Modal za dodavanje kruga
+        // Modal to view images
+        $(document).on("click", ".circuit-map-preview", function(e) {
+            e.stopPropagation();
+            const imageSrc = $(this).attr("data-full-image") || $(this).attr("src");
+            $(".modalImage").attr("src", imageSrc);
+            $(".imageModal").addClass("active");
+        });
+
+        $(".imageModal").on("click", function() {
+            $(this).removeClass("active");
+        });
+
+        // Modal to add circuit
         const addCircuitBtn = document.getElementById('addCircuitBtn');
         const addCircuitModal = document.getElementById('addCircuitModal');
         const cancelAddBtn = document.getElementById('cancelAddBtn');
         const confirmAddBtn = document.getElementById('confirmAddBtn');
         const addCircuitForm = document.getElementById('addCircuitForm');
 
-        addCircuitBtn.addEventListener('click', () => {
-            addCircuitModal.style.display = 'flex';
-            addCircuitForm.reset();
-            $(".modal").scrollTop = 0;
-        });
+        if (addCircuitBtn) {
+            addCircuitBtn.addEventListener('click', () => {
+                addCircuitModal.style.display = 'flex';
+                addCircuitForm.reset();
+                const modalElement = document.querySelector('.modal');
+                if (modalElement) modalElement.scrollTop = 0;
+            });
+        }
 
-        cancelAddBtn.addEventListener('click', () => {
-            addCircuitModal.style.display = 'none';
-        });
-
-        addCircuitModal.addEventListener('click', (e) => {
-            if (e.target === addCircuitModal) {
+        if (cancelAddBtn) {
+            cancelAddBtn.addEventListener('click', () => {
                 addCircuitModal.style.display = 'none';
-            }
-        });
+            });
+        }
 
-        // Dodavanje nove 
-        confirmAddBtn.addEventListener('click', () => {
-            const name = $('#newCircuitName').val();
-            const lengthKM = $('#newCircuitLength').val();
-            const firstGP = $('#newCircuitFirstGP').val();
-            const numberOfLaps = $('#newCircuitLaps').val();
-            const raceDistance = $('#newCircuitRaceDistance').val();
-            const circuitMapUrl = $('#newCircuitMapUrl').val();
-            const country = $('#newCircuitCountry').val();
-
-            if (!name || !lengthKM || !firstGP || !numberOfLaps || !raceDistance || !circuitMapUrl || !country) {
-                alert('Please fill in all fields');
-                return;
-            }
-
-            $.ajax({
-                type: "POST",
-                url: "circuits.php",
-                data: {
-                    what: "add",
-                    name: name,
-                    lengthKM: lengthKM,
-                    firstGP: firstGP,
-                    numberOfLaps: numberOfLaps,
-                    raceDistance: raceDistance,
-                    circuitMapUrl: circuitMapUrl,
-                    country: country
-                },
-                success: function(response) {
-                    try {
-                        const data = JSON.parse(response);
-                        if (data.success) {
-                            // CHANGED: Added drag handle cell
-                            const newRow = `
-                                <tr data-id="${data.id}">
-                                    <td class="drag-handle"><i class="fas fa-grip-vertical"></i></td>
-                                    <td class="name">${name}</td>
-                                    <td class="lengthKM">${lengthKM}</td>
-                                    <td class="firstGP">${firstGP}</td>
-                                    <td class="numberOfLaps">${numberOfLaps}</td>
-                                    <td class="raceDistance">${raceDistance}</td>
-                                    <td class="circuitMapUrl">
-                                        <img src="${circuitMapUrl}" alt="Circuit Map" class="circuit-map-preview">
-                                    </td>
-                                    <td class="country">${country}</td>
-                                    <td class="actions">
-                                        <div class="action-icons">
-                                            <div class="edit-icon" title="Edit circuit">
-                                                <i class="fas fa-edit"></i>
-                                            </div>
-                                            <div class="delete-icon" title="Delete circuit">
-                                                <i class="fas fa-trash-alt"></i>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            `;
-                            $('#circuitsTableBody').prepend(newRow);
-                            addCircuitModal.style.display = 'none';
-                            alert('Circuit added successfully!');
-                        } else {
-                            alert('Error: ' + data.message);
-                        }
-                    } catch (e) {
-                        alert('Circuit added successfully!');
-                        location.reload();
-                    }
-                },
-                error: function() {
-                    alert('Error adding circuit');
+        if (addCircuitModal) {
+            addCircuitModal.addEventListener('click', (e) => {
+                if (e.target === addCircuitModal) {
+                    addCircuitModal.style.display = 'none';
                 }
             });
-        });
+        }
 
-        // Enter u formi za dodavanje
-        addCircuitForm.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                confirmAddBtn.click();
-            }
-        });
+        // Add circuit using jQuery AJAX
+        if (confirmAddBtn) {
+            confirmAddBtn.addEventListener('click', () => {
+                const name = $('#newCircuitName').val().trim();
+                const lengthKM = $('#newCircuitLength').val().trim();
+                const firstGP = $('#newCircuitFirstGP').val().trim();
+                const numberOfLaps = $('#newCircuitLaps').val().trim();
+                const raceDistance = $('#newCircuitRaceDistance').val().trim();
+                const circuitMapUrl = $('#newCircuitMapUrl').val().trim();
+                const country = $('#newCircuitCountry').val().trim();
+
+                if (!name || !lengthKM || !firstGP || !numberOfLaps || !raceDistance || !circuitMapUrl || !country) {
+                    alert('Please fill in all fields');
+                    return;
+                }
+
+                $.ajax({
+                    type: "POST",
+                    url: "circuits.php",
+                    data: {
+                        what: "add",
+                        name: name,
+                        lengthKM: lengthKM,
+                        firstGP: firstGP,
+                        numberOfLaps: numberOfLaps,
+                        raceDistance: raceDistance,
+                        circuitMapUrl: circuitMapUrl,
+                        country: country
+                    },
+                    success: function(response) {
+                        try {
+                            const data = JSON.parse(response);
+                            if (data.success) {
+                                alert('Circuit added successfully!');
+                                location.reload();
+                            } else {
+                                alert('Error: ' + data.message);
+                            }
+                        } catch (e) {
+                            alert('Circuit added successfully!');
+                            location.reload();
+                        }
+                    },
+                    error: function() {
+                        alert('Error adding circuit');
+                    }
+                });
+            });
+        }
+
+        if (addCircuitForm) {
+            addCircuitForm.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    if (confirmAddBtn) confirmAddBtn.click();
+                }
+            });
+        }
 
         // Edit circuit
         $(document).on("click", ".edit-icon", function() {
             const tr = $(this).closest("tr");
             const id = tr.data("id");
 
-            // Check if already in edit mode
-            if (tr.find("input").length) return;
+            if (tr.find("input").length || tr.find("textarea").length) return;
 
-            const fields = ['name', 'lengthKM', 'firstGP', 'numberOfLaps', 'raceDistance', 'circuitMapUrl', 'country'];
-            const originalValues = {};
+            // Store original values
+            const name = tr.find(".name").text().trim();
+            const lengthKM = tr.find(".lengthKM").text().trim();
+            const firstGP = tr.find(".firstGP").text().trim();
+            const numberOfLaps = tr.find(".numberOfLaps").text().trim();
+            const raceDistance = tr.find(".raceDistance").text().trim();
+            const circuitMapUrl = tr.find(".circuitMapUrl img").attr("src") || '';
+            const country = tr.find(".country").text().trim();
 
-            // Store original values and replace with inputs
-            fields.forEach(f => {
-                const td = tr.find(`.${f}`);
-                let val = '';
-
-                if (f === 'circuitMapUrl') {
-                    const img = td.find("img");
-                    val = img.attr("src");
-                    td.html(`<textarea class="edit_${f}" style="width:100%;">${val}</textarea>`);
-                } else {
-                    val = td.text().trim();
-                    td.html(`<input type="text" class="edit_${f}" value="${val}" ${f === 'name' || f === 'country' ? '' : 'type="number" step="0.001"'}>`);
-                }
-                originalValues[f] = val;
-            });
+            // Replace cells with inputs
+            tr.find(".name").html(`<input type="text" class="edit_name" value="${escapeHtml(name)}" style="width:100%;">`);
+            tr.find(".lengthKM").html(`<input type="number" step="0.001" class="edit_lengthKM" value="${lengthKM}" style="width:100%;">`);
+            tr.find(".firstGP").html(`<input type="number" class="edit_firstGP" value="${firstGP}" style="width:100%;">`);
+            tr.find(".numberOfLaps").html(`<input type="number" class="edit_numberOfLaps" value="${numberOfLaps}" style="width:100%;">`);
+            tr.find(".raceDistance").html(`<input type="number" step="0.001" class="edit_raceDistance" value="${raceDistance}" style="width:100%;">`);
+            tr.find(".circuitMapUrl").html(`<textarea class="edit_circuitMapUrl" style="width:100%;" placeholder="Map URL">${escapeHtml(circuitMapUrl)}</textarea>`);
+            tr.find(".country").html(`<input type="text" class="edit_country" value="${escapeHtml(country)}" style="width:100%;">`);
 
             // Store original icons
             const originalIcons = tr.find(".action-icons").html();
@@ -453,19 +466,11 @@ $totalCircuits = mysqli_num_rows($result);
 
             // Cancel function
             tr.find(".cancel-icon").on("click", function() {
-                fields.forEach(f => {
-                    const td = tr.find(`.${f}`);
-                    if (f === 'circuitMapUrl') {
-                        td.html(`<img src="${originalValues[f]}" alt="Circuit Map" class="circuit-map-preview">`);
-                    } else {
-                        td.text(originalValues[f]);
-                    }
-                });
-                tr.find(".action-icons").html(originalIcons);
+                location.reload();
             });
 
             // Enter for saving
-            tr.find("input").on("keydown", function(e) {
+            tr.find("input, textarea").on("keydown", function(e) {
                 if (e.key === "Enter") {
                     saveCircuitChanges(tr, id);
                 }
@@ -504,22 +509,7 @@ $totalCircuits = mysqli_num_rows($result);
                     try {
                         const data = JSON.parse(response);
                         if (data.success) {
-                            tr.find(".name").text(name);
-                            tr.find(".lengthKM").text(lengthKM);
-                            tr.find(".firstGP").text(firstGP);
-                            tr.find(".numberOfLaps").text(numberOfLaps);
-                            tr.find(".raceDistance").text(raceDistance);
-                            tr.find(".circuitMapUrl").html(`<img src="${circuitMapUrl}" alt="Circuit Map" class="circuit-map-preview">`);
-                            tr.find(".country").text(country);
-
-                            tr.find(".action-icons").html(`
-                                <div class="edit-icon" title="Edit circuit">
-                                    <i class="fas fa-edit"></i>
-                                </div>
-                                <div class="delete-icon" title="Delete circuit">
-                                    <i class="fas fa-trash-alt"></i>
-                                </div>
-                            `);
+                            location.reload();
                         } else {
                             alert('Error: ' + data.message);
                         }
@@ -570,47 +560,13 @@ $totalCircuits = mysqli_num_rows($result);
             });
         });
 
-        // NEW: Drag and drop functionality
-        $(function() {
-            $("#circuitsTableBody").sortable({
-                handle: ".drag-handle",
-                helper: function(e, tr) {
-                    var $helper = tr.clone();
-                    $helper.children().each(function(i) {
-                        $(this).width(tr.children().eq(i).width());
-                    });
-                    return $helper;
-                },
-                update: function() {
-                    const positions = [];
-                    $('#circuitsTableBody tr').each(function(index) {
-                        positions.push({
-                            id: $(this).data('id'),
-                            position: index + 1
-                        });
-                    });
-                    
-                    if ($('.save-order-btn').length === 0) {
-                        $('.add-user').append('<button  class="action-btn" style="margin-top:20px;" id="saveOrderBtn"><i class="fas fa-save"></i> Save Order</button>');
-                    }
-                    
-                    $('#saveOrderBtn').off('click').click(function() {
-                        $.ajax({
-                            type: "POST",
-                            url: "circuits.php",
-                            data: {
-                                what: "updatePositions",
-                                positions: JSON.stringify(positions)
-                            },
-                            success: function(response) {
-                                $('#saveOrderBtn').remove();
-                                alert('Circuit order saved!');
-                            }
-                        });
-                    });
-                }
-            });
-        });
+        // Helper function to escape HTML
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
     </script>
 </body>
 

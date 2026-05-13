@@ -55,7 +55,15 @@ if (!empty($_POST['what'])) {
 
         if ($insert) {
             $newId = mysqli_insert_id($conn);
-            echo json_encode(["success" => true, "id" => $newId]);
+            $teamName = '';
+            if ($team_id !== 'NULL') {
+                $teamQuery = mysqli_query($conn, "SELECT name FROM teams WHERE id = $team_id");
+                if ($teamRow = mysqli_fetch_assoc($teamQuery)) {
+                    $teamName = $teamRow['name'];
+                }
+            }
+            
+            echo json_encode(["success" => true, "id" => $newId, "team_name" => $teamName]);
         } else {
             echo json_encode(["success" => false, "message" => "Insert failed"]);
         }
@@ -93,7 +101,7 @@ while ($team = mysqli_fetch_assoc($teamsResult)) {
         })();
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-    <title>F1 Dashboard | Drivers Admin</title>
+    <title>F1 Dashboard | Drivers</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="admin.css">
     <link rel="shortcut icon" type="image/x-icon" href="../pictures/flagIcon.png" />

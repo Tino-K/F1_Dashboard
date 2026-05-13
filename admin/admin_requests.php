@@ -153,7 +153,6 @@ $totalRequests = $requestsResult ? mysqli_num_rows($requestsResult) : 0;
             </div>
             <div class="search-box">
                 <input type="text" id="searchInput" placeholder="Search by email or text...">
-                <button class="searchBtn"><i class="fas fa-search"></i></button>
             </div>
         </div>
 
@@ -236,13 +235,11 @@ $totalRequests = $requestsResult ? mysqli_num_rows($requestsResult) : 0;
 
     <script>
         $(document).ready(function() {
-            // Store all rows data for filtering
             let allRows = [];
             
-            // Cache all rows data
             $('#tableBody tr').each(function() {
                 const $row = $(this);
-                if ($row.data('id')) { // Only process rows with valid data
+                if ($row.data('id')) {
                     allRows.push({
                         element: $row,
                         isGuest: $row.data('guest') == 1,
@@ -305,7 +302,6 @@ $totalRequests = $requestsResult ? mysqli_num_rows($requestsResult) : 0;
 
             // Event listeneri za filtere
             $('#guestFilter, #statusFilter').on('change', filterTable);
-            $('#searchBtn').on('click', filterTable);
             $('#searchInput').on('keyup', function(e) {
                 if (e.key === 'Enter') filterTable();
             });

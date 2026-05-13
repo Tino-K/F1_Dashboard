@@ -8,16 +8,17 @@ if (!isset($_SESSION['email']) || $_SESSION['role'] !== "admin") {
 
 require_once "../config.php";
 
-//Theme
-$email=$_SESSION['email'];
-$theme=mysqli_fetch_assoc(mysqli_query($conn,"SELECT users.theme_preference FROM users WHERE users.email = '$email'"));
+// Theme
+$email = $_SESSION['email'];
+$theme = mysqli_fetch_assoc(mysqli_query($conn, "SELECT users.theme_preference FROM users WHERE users.email = '$email'"));
 
 // Handle AJAX actions: delete, update, or add
 if (!empty($_POST['what'])) {
+    header('Content-Type: application/json');
+    
     if ($_POST['what'] === 'delete' && !empty($_POST['id'])) {
         $id = (int)$_POST['id'];
         
-        // First check if team has any drivers
         $check = mysqli_query($conn, "SELECT id FROM drivers WHERE team_id = $id LIMIT 1");
         if (mysqli_num_rows($check) > 0) {
             echo json_encode(["success" => false, "message" => "Cannot delete team with assigned drivers"]);
@@ -34,15 +35,16 @@ if (!empty($_POST['what'])) {
         $name = mysqli_real_escape_string($conn, $_POST['name']);
         $logo = mysqli_real_escape_string($conn, $_POST['logo']);
         $car_image = mysqli_real_escape_string($conn, $_POST['car_image']);
+        $color = mysqli_real_escape_string($conn, $_POST['color']);
 
         $update = mysqli_query($conn, "UPDATE teams 
-            SET name='$name', logo='$logo', car_image='$car_image'
+            SET name='$name', logo='$logo', car_image='$car_image', color='$color'
             WHERE id=$id");
 
         if ($update) {
             echo json_encode(["success" => true]);
         } else {
-            echo json_encode(["success" => false, "message" => "Update failed"]);
+            echo json_encode(["success" => false, "message" => mysqli_error($conn)]);
         }
         exit;
     }
@@ -51,15 +53,16 @@ if (!empty($_POST['what'])) {
         $name = mysqli_real_escape_string($conn, $_POST['name']);
         $logo = mysqli_real_escape_string($conn, $_POST['logo']);
         $car_image = mysqli_real_escape_string($conn, $_POST['car_image']);
+        $color = mysqli_real_escape_string($conn, $_POST['color']);
 
-        $insert = mysqli_query($conn, "INSERT INTO teams (name, logo, car_image) 
-            VALUES ('$name', '$logo', '$car_image')");
+        $insert = mysqli_query($conn, "INSERT INTO teams (name, logo, car_image, color) 
+            VALUES ('$name', '$logo', '$car_image', '$color')");
 
         if ($insert) {
             $newId = mysqli_insert_id($conn);
             echo json_encode(["success" => true, "id" => $newId]);
         } else {
-            echo json_encode(["success" => false, "message" => "Insert failed"]);
+            echo json_encode(["success" => false, "message" => mysqli_error($conn)]);
         }
         exit;
     }
@@ -69,7 +72,7 @@ if (!empty($_POST['what'])) {
 $result = mysqli_query($conn, "SELECT * FROM teams ORDER BY name ASC");
 $totalTeams = mysqli_num_rows($result);
 
-// Get drivers for each team - fetch all drivers and organize by team
+// Get drivers for each team
 $driversByTeam = [];
 $driversQuery = mysqli_query($conn, "SELECT id, name, surname, team_id, image FROM drivers WHERE team_id IS NOT NULL ORDER BY surname ASC, name ASC");
 while ($driver = mysqli_fetch_assoc($driversQuery)) {
@@ -86,7 +89,6 @@ while ($driver = mysqli_fetch_assoc($driversQuery)) {
 <head>
     <meta charset="UTF-8">
     <script>
-        // Theme
         (function() {
             const savedTheme = <?= json_encode($theme['theme_preference']); ?>;
             if (savedTheme === 'dark') {
@@ -96,14 +98,52 @@ while ($driver = mysqli_fetch_assoc($driversQuery)) {
         })();
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-    <title>F1 Dashboard | Teams Admin</title>
+    <title>F1 Dashboard | Teams</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="admin.css">
     <link rel="shortcut icon" type="image/x-icon" href="../pictures/flagIcon.png" />
+    <style>
+        .team-color-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 4px;
+        }
+        .input-color-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .input-color-group {
+            width: 60px;
+            height: 40px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            background: var(--bg-secondary);
+            cursor: pointer;
+        }
+        .input-color-group span {
+            font-family: monospace;
+            font-size: 14px;
+            background: var(--bg-secondary);
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: var(--text-color);
+        }
+        .color-cell {
+            text-align: center;
+            vertical-align: middle;
+        }
+        .edit_color {
+            width: 60px;
+            height: 40px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+    </style>
 </head>
 
 <body>
-    <!-- Header -->
     <div class="header">
         <div class="logo">
             <div class="logo-icon">
@@ -118,7 +158,6 @@ while ($driver = mysqli_fetch_assoc($driversQuery)) {
     </div>
 
     <div class="container">
-        <!-- Navigation -->
         <div class="nav-container">
             <a href="admin_page.php" class="nav-link">
                 <button class="nav-btn nav-btn-default">
@@ -169,7 +208,6 @@ while ($driver = mysqli_fetch_assoc($driversQuery)) {
             <h1>Team <span>Management</span></h1>
         </div>
 
-        <!-- Teams Table -->
         <div class="table-container">
             <table>
                 <thead>
@@ -177,32 +215,36 @@ while ($driver = mysqli_fetch_assoc($driversQuery)) {
                         <th>Team</th>
                         <th>Logo</th>
                         <th>Car Image</th>
+                        <th>Color</th>
                         <th>Drivers</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody id="teamsTableBody">
-                    <?php while ($row = mysqli_fetch_assoc($result)): 
+                    <?php while ($row = mysqli_fetch_assoc($result)):
                         $teamDrivers = isset($driversByTeam[$row['id']]) ? $driversByTeam[$row['id']] : [];
+                        $teamColor = !empty($row['color']) ? htmlspecialchars($row['color']) : '#000000';
                     ?>
                         <tr data-id="<?= $row['id'] ?>">
-                            <td class="team-name">  
-                                    <span><?= htmlspecialchars($row['name']) ?></span>
-                                </div>
+                            <td class="team-name">
+                                <span><?= htmlspecialchars($row['name']) ?></span>
                             </td>
                             <td class="logo">
                                 <?php if ($row['logo']): ?>
-                                    <img src="<?= htmlspecialchars($row['logo']) ?>" alt="Team Logo" class="team-logo-preview">
+                                    <img src="<?= htmlspecialchars($row['logo']) ?>" alt="Team Logo" class="team-logo-preview" style="max-height: 40px; background-color: <?= htmlspecialchars($row['color']) ?>;">
                                 <?php else: ?>
                                     <i class="fas fa-image" style="font-size: 30px; color: var(--border-color);"></i>
                                 <?php endif; ?>
                             </td>
                             <td class="car-image">
                                 <?php if ($row['car_image']): ?>
-                                    <img src="<?= htmlspecialchars($row['car_image']) ?>" alt="Car Image" class="car-image-preview">
+                                    <img src="<?= htmlspecialchars($row['car_image']) ?>" alt="Car Image" class="car-image-preview" style="max-height: 40px;">
                                 <?php else: ?>
                                     <i class="fas fa-car" style="font-size: 30px; color: var(--border-color);"></i>
                                 <?php endif; ?>
+                            </td>
+                            <td class="color-cell">
+                                <div class="team-color-preview" style="background-color: <?= $teamColor ?>;" title="<?= $teamColor ?>"></div>
                             </td>
                             <td class="drivers-list-cell">
                                 <div class="drivers-list">
@@ -213,7 +255,7 @@ while ($driver = mysqli_fetch_assoc($driversQuery)) {
                                     <?php else: ?>
                                         <?php foreach ($teamDrivers as $driver): ?>
                                             <div class="driver-item">
-                                                <img src="<?= htmlspecialchars($driver['image']) ?>" alt="Driver image" class="driver-image-preview">
+                                                <img src="<?= htmlspecialchars($driver['image']) ?>" alt="Driver image" class="driver-image-preview" style="max-height: 30px;">
                                                 <div class="driver-name-line">
                                                     <span class="driver-first-name"><?= htmlspecialchars($driver['name']) ?></span>
                                                     <span class="driver-last-name"><?= htmlspecialchars($driver['surname']) ?></span>
@@ -239,7 +281,6 @@ while ($driver = mysqli_fetch_assoc($driversQuery)) {
             </table>
         </div>
 
-        <!-- Footer Actions -->
         <div class="footer-actions">
             <div style="color: var(--text-color); opacity: 0.8;">
                 <i class="fas fa-info-circle"></i>
@@ -254,7 +295,6 @@ while ($driver = mysqli_fetch_assoc($driversQuery)) {
         </div>
     </div>
 
-    <!-- Modal za dodavanje novog tima -->
     <div class="modal-overlay" id="addTeamModal">
         <div class="modal" style="max-height: 90vh; overflow-y: auto;">
             <div class="modal-header">
@@ -274,6 +314,13 @@ while ($driver = mysqli_fetch_assoc($driversQuery)) {
                         <label for="newTeamCarImage">Car Image URL</label>
                         <textarea id="newTeamCarImage" name="car_image" placeholder="https://example.com/car.jpg" required></textarea>
                     </div>
+                    <div class="form-group">
+                        <label for="newTeamColor">Team Color (Hex)</label>
+                        <div class="input-color-group">
+                            <input type="text" id="newTeamColor" name="color" placeholder="#000000" value="#000000">
+                            <div class="team-color-preview" style="width: 40px; height: 40px; background-color: #000000;"></div>
+                        </div>
+                    </div>
                 </form>
             </div>
             <div class="modal-footer">
@@ -290,7 +337,19 @@ while ($driver = mysqli_fetch_assoc($driversQuery)) {
     </div>
 
     <script>
-        // Modal za dodavanje tima
+        // Live color preview in add modal
+        const colorText = document.getElementById('newTeamColor');
+        const colorPreview = document.querySelector('#addTeamModal .team-color-preview');
+
+        if (colorText && colorPreview) {
+            colorText.addEventListener('input', function() {
+                let hex = this.value;
+                if (hex.match(/^#[0-9A-Fa-f]{6}$/) || hex.match(/^#[0-9A-Fa-f]{3}$/)) {
+                    colorPreview.style.backgroundColor = hex;
+                }
+            });
+        }
+
         const addTeamBtn = document.getElementById('addTeamBtn');
         const addTeamModal = document.getElementById('addTeamModal');
         const cancelAddBtn = document.getElementById('cancelAddBtn');
@@ -300,7 +359,10 @@ while ($driver = mysqli_fetch_assoc($driversQuery)) {
         addTeamBtn.addEventListener('click', () => {
             addTeamModal.style.display = 'flex';
             addTeamForm.reset();
-            $(".modal").scrollTop(0);
+            if (colorText) {
+                colorText.value = '#000000';
+                if (colorPreview) colorPreview.style.backgroundColor = '#000000';
+            }
         });
 
         cancelAddBtn.addEventListener('click', () => {
@@ -313,13 +375,13 @@ while ($driver = mysqli_fetch_assoc($driversQuery)) {
             }
         });
 
-        // Dodavanje novog tima
         confirmAddBtn.addEventListener('click', () => {
             const name = $('#newTeamName').val().trim();
             const logo = $('#newTeamLogo').val().trim();
             const car_image = $('#newTeamCarImage').val().trim();
+            const color = $('#newTeamColor').val();
 
-            if (!name || !logo || !car_image) {
+            if (!name || !logo || !car_image || !color) {
                 alert('Please fill in all fields');
                 return;
             }
@@ -331,29 +393,24 @@ while ($driver = mysqli_fetch_assoc($driversQuery)) {
                     what: "add",
                     name: name,
                     logo: logo,
-                    car_image: car_image
+                    car_image: car_image,
+                    color: color
                 },
+                dataType: "json",
                 success: function(response) {
-                    try {
-                        const data = JSON.parse(response);
-                        if (data.success) {
-                            alert('Team added successfully!');
-                            location.reload();
-                        } else {
-                            alert('Error: ' + data.message);
-                        }
-                    } catch (e) {
+                    if (response.success) {
                         alert('Team added successfully!');
                         location.reload();
+                    } else {
+                        alert('Error: ' + response.message);
                     }
                 },
-                error: function() {
-                    alert('Error adding team');
+                error: function(xhr) {
+                    alert('Error adding team: ' + xhr.responseText);
                 }
             });
         });
 
-        // Enter u formi za dodavanje
         addTeamForm.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 e.preventDefault();
@@ -361,104 +418,72 @@ while ($driver = mysqli_fetch_assoc($driversQuery)) {
             }
         });
 
-        // Edit team
+        // Edit functionality
         $(document).on("click", ".edit-icon", function() {
             const tr = $(this).closest("tr");
             const id = tr.data("id");
 
-            // Check if already in edit mode
-            if (tr.find("input").length) return;
+            if (tr.find(".edit_name").length) return;
 
-            // Store original values
             const name = tr.find(".team-name span").text().trim();
             const logo = tr.find(".logo img").attr("src") || '';
             const car_image = tr.find(".car-image img").attr("src") || '';
+            const colorHex = tr.find(".color-cell .team-color-preview").attr('title') || '#cccccc';
 
-            // Replace cells with inputs
-            tr.find(".team-name").html(`
-                <input type="text" class="edit_name" value="${name}" placeholder="Team name" style="width:100%;">
-            `);
-            
-            tr.find(".logo").html(`
-                <textarea class="edit_logo" style="width:100%;" placeholder="Logo URL">${logo}</textarea>
-            `);
-            
-            tr.find(".car-image").html(`
-                <textarea class="edit_car_image" style="width:100%;" placeholder="Car image URL">${car_image}</textarea>
-            `);
-            
-            // Keep drivers list as is but make it readonly during edit
-            // No changes needed to drivers cell during edit
+            tr.find(".team-name").html('<input type="text" class="edit_name" value="' + name.replace(/"/g, '&quot;') + '" style="width:100%;">');
+            tr.find(".logo").html('<textarea class="edit_logo" style="width:100%;">' + logo + '</textarea>');
+            tr.find(".car-image").html('<textarea class="edit_car_image" style="width:100%;">' + car_image + '</textarea>');
+            tr.find(".color-cell").html('<input type="text" class="edit_color" value="' + colorHex + '" style="width:100px;">');
 
-            // Store original icons
-            const originalIcons = tr.find(".action-icons").html();
-
-            // Replace icons with Save/Cancel
             tr.find(".action-icons").html(`
-                <div class="save-icon" title="Save changes">
+                <div class="save-icon">
                     <i class="fas fa-check"></i>
                 </div>
-                <div class="cancel-icon" title="Cancel">
+                <div class="cancel-icon">
                     <i class="fas fa-times"></i>
                 </div>
             `);
 
-            // Save function
-            tr.find(".save-icon").on("click", function() {
-                saveTeamChanges(tr, id);
-            });
+            tr.find(".save-icon").off("click").on("click", function() {
+                const newName = tr.find(".edit_name").val();
+                const newLogo = tr.find(".edit_logo").val();
+                const newCarImage = tr.find(".edit_car_image").val();
+                const newColor = tr.find(".edit_color").val();
 
-            // Cancel function
-            tr.find(".cancel-icon").on("click", function() {
-                location.reload(); // Simple reload to restore original view
-            });
-
-            // Enter for saving
-            tr.find("input, textarea").on("keydown", function(e) {
-                if (e.key === "Enter") {
-                    saveTeamChanges(tr, id);
+                if (!newName || !newLogo || !newCarImage || !newColor) {
+                    alert('All fields are required');
+                    return;
                 }
+
+                $.ajax({
+                    type: "POST",
+                    url: "teams.php",
+                    data: {
+                        what: "edit",
+                        id: id,
+                        name: newName,
+                        logo: newLogo,
+                        car_image: newCarImage,
+                        color: newColor
+                    },
+                    dataType: "json",
+                    success: function(response) {
+                        if (response.success) {
+                            location.reload();
+                        } else {
+                            alert('Error: ' + response.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        alert('Error saving changes: ' + xhr.responseText);
+                    }
+                });
+            });
+
+            tr.find(".cancel-icon").off("click").on("click", function() {
+                location.reload();
             });
         });
-
-        function saveTeamChanges(tr, id) {
-            const name = tr.find(".edit_name").val();
-            const logo = tr.find(".edit_logo").val();
-            const car_image = tr.find(".edit_car_image").val();
-
-            if (!name || !logo || !car_image) {
-                alert('All fields are required');
-                return;
-            }
-
-            $.ajax({
-                type: "POST",
-                url: "teams.php",
-                data: {
-                    what: "edit",
-                    id: id,
-                    name: name,
-                    logo: logo,
-                    car_image: car_image
-                },
-                success: function(response) {
-                    try {
-                        const data = JSON.parse(response);
-                        if (data.success) {
-                            location.reload(); // Reload to show in correct alphabetical order
-                        } else {
-                            alert('Error: ' + data.message);
-                        }
-                    } catch (e) {
-                        alert('Changes saved successfully!');
-                        location.reload();
-                    }
-                },
-                error: function() {
-                    alert('Error saving changes');
-                }
-            });
-        }
 
         // Delete team
         $(document).on("click", ".delete-icon", function() {
@@ -467,7 +492,7 @@ while ($driver = mysqli_fetch_assoc($driversQuery)) {
             const driverCount = tr.find(".driver-item").length;
 
             if (driverCount > 0) {
-                alert('Cannot delete this team because it has ' + driverCount + ' assigned driver(s). Please reassign or delete the drivers first.');
+                alert('Cannot delete this team because it has ' + driverCount + ' assigned driver(s).');
                 return;
             }
 
@@ -480,24 +505,18 @@ while ($driver = mysqli_fetch_assoc($driversQuery)) {
                     id: id,
                     what: "delete"
                 },
+                dataType: "json",
                 success: function(response) {
-                    try {
-                        const data = JSON.parse(response);
-                        if (data.success) {
-                            tr.fadeOut(300, function() {
-                                $(this).remove();
-                            });
-                        } else {
-                            alert('Error: ' + data.message);
-                        }
-                    } catch (e) {
+                    if (response.success) {
                         tr.fadeOut(300, function() {
                             $(this).remove();
                         });
+                    } else {
+                        alert('Error: ' + response.message);
                     }
                 },
-                error: function() {
-                    alert('Error deleting team');
+                error: function(xhr) {
+                    alert('Error deleting team: ' + xhr.responseText);
                 }
             });
         });

@@ -72,7 +72,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </div>
             <div class="logo-text">F1 Dashboard</div>
         </div>
-        <?php if (isset($_SESSION["role"]) !== "user"): ?>
+        <?php if (htmlspecialchars($_SESSION['role']) === "admin"): ?>
             <button onclick="window.location.href='../admin/admin_page.php'" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Go Back
             </button>

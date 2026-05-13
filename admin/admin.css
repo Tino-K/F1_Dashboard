@@ -150,7 +150,7 @@ body {
     margin-bottom: 30px;
 }
 
-.refresh-btn, .searchBtn {
+.refresh-btn{
     align-items: center;
     background: var(--primary-red);
     border: none;
@@ -161,6 +161,7 @@ body {
     font-weight: 600;
     gap: 8px;
     padding: 10px 20px;
+    height: 45px;
 }
 
 .refresh-btn:hover {
@@ -415,6 +416,7 @@ td textarea {
 .nav-link {
     flex: 1 1 calc(20% - 10px);
     min-width: 180px;
+    text-decoration: none;
 }
 
 .nav-link:nth-child(-n+2) {

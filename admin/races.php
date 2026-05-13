@@ -32,7 +32,7 @@ $selectedSeason = isset($_GET['season']) ? (int)$_GET['season'] : $currentYear;
         })();
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
-    <title>F1 Dashboard | Races Admin</title>
+    <title>F1 Dashboard | Races</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="admin.css">
     <link rel="shortcut icon" type="image/x-icon" href="../pictures/flagIcon.png" />
