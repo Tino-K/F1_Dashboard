@@ -7,11 +7,22 @@ $userName = $_SESSION['name'] ?? '';
 
 $message = '';
 $error = '';
+$theme = 'dark';
+require_once 'config.php';
 
+if ($loggedIn && !empty($userEmail)) {
+    $themeResult = mysqli_query($conn, "SELECT theme_preference FROM users WHERE email = '$userEmail'");
+    if ($themeResult && mysqli_num_rows($themeResult) > 0) {
+        $row = mysqli_fetch_assoc($themeResult);
+        $theme = $row['theme_preference'] ?? 'light';
+    }
+}
+
+// Handle form submission
 if (isset($_POST['submit'])) {
-
     require_once 'config.php';
 
+    $name  = trim($_POST['name'] ?? '');
     $email = trim($_POST['email'] ?? '');
     $text  = trim($_POST['message'] ?? '');
 
@@ -22,12 +33,14 @@ if (isset($_POST['submit'])) {
         $error = "Please enter your email.";
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Please enter a valid email address.";
+    } elseif (empty($name)) {
+        $error = "Please enter your name.";
     }
 
     if (empty($error)) {
         $guest = $loggedIn ? 0 : 1;
-        $stmt = $conn->prepare("INSERT INTO requests (guest, text, email) VALUES (?, ?, ?)");
-        $stmt->bind_param("iss", $guest, $text, $email);
+        $stmt = $conn->prepare("INSERT INTO requests (guest, text, email, name) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("isss", $guest, $text, $email, $name);
 
         if ($stmt->execute()) {
             $message = "Your request has been sent successfully!";
@@ -35,16 +48,33 @@ if (isset($_POST['submit'])) {
         } else {
             $error = "Error sending request. Please try again.";
         }
-
-        $stmt->close();
-        $conn->close();
     }
+    $stmt->close();
+
 }
+mysqli_close($conn);
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
+    <script>
+        (function() {
+            let savedTheme = null;
+            console.log("<?= htmlspecialchars($theme) ?>")
+            <?php if (!$loggedIn): ?>
+                savedTheme = localStorage.getItem("f1-theme");
+            <?php else: ?>
+                savedTheme = <?= json_encode($theme); ?>;
+                console.log(savedTheme)
+            <?php endif; ?>
+            if (savedTheme == 'dark') {
+                document.documentElement.classList.add('dark-theme');
+                document.documentElement.classList.add('dark');
+            }
+        })();
+    </script>
     <meta charset="UTF-8">
     <title>Contact Administrator | F1 Dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -61,11 +91,6 @@ if (isset($_POST['submit'])) {
                     <div class="logo-text">F1 Dashboard</div>
                 </div>
             </a>
-            <div class="theme-toggle" id="themeToggle">
-                <i class="fas fa-sun"></i>
-                <i class="fas fa-moon"></i>
-                <div class="toggle-circle"></div>
-            </div>
         </div>
     </header>
 
@@ -96,19 +121,29 @@ if (isset($_POST['submit'])) {
                     <i class="fas fa-info-circle"></i>
                     <?php if ($loggedIn): ?>
                         <strong>Logged in as: <?= htmlspecialchars($userName) ?></strong><br>
-                        Your email address is automatically included.
+                        Your name and email address are automatically included.
                     <?php else: ?>
                         <strong>You are accessing as a guest.</strong><br>
-                        Please enter your email address so we can respond to you.
+                        Please enter your name and email address so we can respond to you.
                     <?php endif; ?>
                 </div>
 
                 <!-- Form -->
                 <form method="POST" id="contactForm">
                     <div class="form-group">
+                        <i class="fas fa-user"></i>
+                        <input type="text" name="name" id="name" placeholder="Your full name"
+                            value="<?= htmlspecialchars($loggedIn ? $userName : ($_POST['name'] ?? '')) ?>"
+                            <?= $loggedIn ? 'readonly' : '' ?>
+                            required>
+                    </div>
+
+                    <div class="form-group">
                         <i class="fas fa-envelope"></i>
                         <input type="email" name="email" id="email" placeholder="Your email address"
-                            value="<?= htmlspecialchars($loggedIn ? $userEmail : ($_POST['email'] ?? '')) ?>" required>
+                            value="<?= htmlspecialchars($loggedIn ? $userEmail : ($_POST['email'] ?? '')) ?>"
+                            <?= $loggedIn ? 'readonly' : '' ?>
+                            required>
                     </div>
 
                     <div class="form-group">
@@ -154,22 +189,6 @@ if (isset($_POST['submit'])) {
             if (!previousPage && document.referrer) {
                 localStorage.setItem('previousPage', document.referrer);
             }
-        });
-
-        // Dark mode
-        const toggle = document.getElementById('themeToggle');
-        const body = document.body;
-
-        const savedTheme = localStorage.getItem('f1-theme');
-        if (savedTheme === 'dark-theme') {
-            body.classList.add('dark-theme');
-            toggle.classList.add('dark');
-        }
-
-        toggle.addEventListener('click', () => {
-            body.classList.toggle('dark-theme');
-            toggle.classList.toggle('dark');
-            localStorage.setItem('f1-theme', body.classList.contains('dark-theme') ? 'dark-theme' : '');
         });
     </script>
 </body>

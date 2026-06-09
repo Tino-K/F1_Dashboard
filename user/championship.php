@@ -47,13 +47,16 @@ $userName = $_SESSION['name'] ?? 'Guest';
 <head>
     <meta charset="UTF-8">
     <script>
-        (function() {
-            const savedTheme = <?= json_encode($theme['theme_preference'] ?? 'light'); ?>;
-            if (savedTheme === 'dark') {
-                document.documentElement.classList.add('dark-theme');
-                document.documentElement.classList.add('dark');
-            }
-        })();
+        let savedTheme = null;
+        <?php if ($isGuest): ?>
+            savedTheme = localStorage.getItem("f1-theme");
+        <?php else: ?>
+            savedTheme = <?= json_encode($theme['theme_preference']); ?>;
+        <?php endif; ?>
+        if (savedTheme == 'dark') {
+            document.documentElement.classList.add('dark-theme');
+            document.documentElement.classList.add('dark');
+        }
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <title>F1 Dashboard | Championship Standings</title>
@@ -72,15 +75,15 @@ $userName = $_SESSION['name'] ?? 'Guest';
             <div class="logo-text">F1 Dashboard</div>
         </div>
         <?php if ($isGuest): ?>
-        <div class="user-badge">
-            <i class="fas fa-user"></i>
-            <span><?= htmlspecialchars($userName) ?></span>
-        </div>
+            <div class="user-badge">
+                <i class="fas fa-user"></i>
+                <span><?= htmlspecialchars($userName) ?></span>
+            </div>
         <?php else: ?>
-        <div class="user-badge" onclick="window.location.href='../UserEdit/userOptions.php'">
-            <i class="fas fa-user"></i>
-            <span><?= htmlspecialchars($userName) ?></span>
-        </div>
+            <div class="user-badge" onclick="window.location.href='../UserEdit/userOptions.php'">
+                <i class="fas fa-user"></i>
+                <span><?= htmlspecialchars($userName) ?></span>
+            </div>
         <?php endif; ?>
     </div>
 
@@ -126,10 +129,10 @@ $userName = $_SESSION['name'] ?? 'Guest';
         </div>
 
         <?php if ($isGuest): ?>
-        <div class="timer-warning">
-            <i class="fas fa-hourglass-half"></i>
-            <strong>Guest Access:</strong> You have <span id="timer"><?= $remaining ?></span> seconds remaining.
-        </div>
+            <div class="timer-warning">
+                <i class="fas fa-hourglass-half"></i>
+                <strong>Guest Access:</strong> You have <span id="timer"><?= $remaining ?></span> seconds remaining.
+            </div>
         <?php endif; ?>
 
         <div class="page-title">
@@ -181,16 +184,16 @@ $userName = $_SESSION['name'] ?? 'Guest';
 
     <script>
         <?php if ($isGuest): ?>
-        let timeLeft = <?= $remaining ?>;
-        const timer = setInterval(() => {
-            timeLeft--;
-            document.getElementById("timer").textContent = timeLeft;
-            if (timeLeft <= 0) {
-                clearInterval(timer);
-                alert('Your guest session has expired. Please login to continue.');
-                window.location.href = "../index.php";
-            }
-        }, 1000);
+            let timeLeft = <?= $remaining ?>;
+            const timer = setInterval(() => {
+                timeLeft--;
+                document.getElementById("timer").textContent = timeLeft;
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    alert('Your guest session has expired. Please login to continue.');
+                    window.location.href = "../index.php";
+                }
+            }, 1000);
         <?php endif; ?>
 
         async function loadStandings(season) {
@@ -291,7 +294,9 @@ $userName = $_SESSION['name'] ?? 'Guest';
         }
 
         $('#refreshStandingsBtn').click(() => loadStandings($('#seasonSelect').val()));
-        $('#seasonSelect').keydown(e => { if (e.key === "Enter") loadStandings($('#seasonSelect').val()); });
+        $('#seasonSelect').keydown(e => {
+            if (e.key === "Enter") loadStandings($('#seasonSelect').val());
+        });
         $(document).ready(() => loadStandings($('#seasonSelect').val()));
     </script>
 </body>

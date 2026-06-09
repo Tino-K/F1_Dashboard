@@ -43,6 +43,15 @@ function isActiveForm($formName, $activeForm)
 
 <head>
     <meta charset="UTF-8">
+    <script>
+        const body = document.documentElement;
+        const savedTheme = localStorage.getItem('f1-theme');
+        if (savedTheme === 'dark') {
+            body.classList.add('dark-theme');
+        } else {
+            body.classList.remove('dark-theme');
+        }
+    </script>
     <title>F1 Dashboard | Login / Register</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="login_register.css">
@@ -191,31 +200,33 @@ function isActiveForm($formName, $activeForm)
     </footer>
 
     <script>
-        // Prebacivanje između svijetle i tamne teme
         const themeToggle = document.getElementById('themeToggle');
-        const body = document.body;
 
-        // Provjera je li tema već postavljena u localStorage
-        const savedTheme = localStorage.getItem('f1-theme');
-        if (savedTheme) {
-            body.classList.add(savedTheme);
-            if (savedTheme === 'dark-theme') {
-                themeToggle.classList.add('dark');
+        function syncToggleButton() {
+            if (themeToggle) {
+                if (body.classList.contains('dark-theme')) {
+                    themeToggle.classList.add('dark');
+                } else {
+                    themeToggle.classList.remove('dark');
+                }
             }
         }
 
-        // Dodavanje event listenera za prebacivanje teme
-        themeToggle.addEventListener('click', () => {
-            body.classList.toggle('dark-theme');
-            themeToggle.classList.toggle('dark');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                body.classList.toggle('dark-theme');
+                themeToggle.classList.toggle('dark');
 
-            // Spremanje postavke teme u localStorage
-            if (body.classList.contains('dark-theme')) {
-                localStorage.setItem('f1-theme', 'dark-theme');
-            } else {
-                localStorage.setItem('f1-theme', '');
-            }
-        });
+                if (body.classList.contains('dark-theme')) {
+                    localStorage.setItem('f1-theme', 'dark');
+                } else {
+                    localStorage.setItem('f1-theme', 'light');
+                }
+            });
+        }
+
+        syncToggleButton();
+
 
         // Funkcije za prebacivanje između login i register formi
         function showForm(formType) {
@@ -276,20 +287,17 @@ function isActiveForm($formName, $activeForm)
                 number: /[0-9]/.test(password)
             };
 
-            // Ažuriraj ikone pravila
             document.getElementById('ruleLength').className = rules.length ? 'rule-valid' : 'rule-invalid';
             document.getElementById('ruleUppercase').className = rules.uppercase ? 'rule-valid' : 'rule-invalid';
             document.getElementById('ruleLowercase').className = rules.lowercase ? 'rule-valid' : 'rule-invalid';
             document.getElementById('ruleNumber').className = rules.number ? 'rule-valid' : 'rule-invalid';
 
-            // Izračunaj jakost lozinke
             let score = 0;
             if (rules.length) score += 25;
             if (rules.uppercase) score += 25;
             if (rules.lowercase) score += 25;
             if (rules.number) score += 25;
 
-            // Postavi klasu jakosti
             strengthBar.className = 'password-strength';
             if (score == 25) {
                 strengthBar.classList.add('strength-weak');

@@ -225,9 +225,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (isDark) {
                 body.classList.add('dark-theme');
                 themeToggle.classList.add('dark');
+                localStorage.setItem('f1-theme', 'dark');
             } else {
                 body.classList.remove('dark-theme');
                 themeToggle.classList.remove('dark');
+                localStorage.setItem('f1-theme', 'light');
             }
         }
 
@@ -250,23 +252,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             });
         });
-
-        // Live avatar preview
-        const avatarUrlInput = document.getElementById('avatar_url');
-        const avatarPreview = document.getElementById('avatarPreview');
-
-        if (avatarUrlInput && avatarPreview) {
-            avatarUrlInput.addEventListener('input', function() {
-                const url = this.value;
-                if (url) {
-                    avatarPreview.src = url;
-                    avatarPreview.onerror = function() {
-                        this.src = '';
-                        this.alt = 'Invalid image URL';
-                    };
-                }
-            });
-        }
 
         function resetForm() {
             document.getElementById('profileForm').reset();

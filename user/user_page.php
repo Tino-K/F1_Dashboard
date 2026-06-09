@@ -26,7 +26,7 @@ if (!isset($_SESSION['email'])) {
 require_once "../config.php";
 
 // Theme preference for logged in users
-$theme = ['theme_preference' => 'light'];
+$theme = ['theme_preference' => 'dark'];
 if (isset($_SESSION['email'])) {
     $email = mysqli_real_escape_string($conn, $_SESSION['email']);
     $themeResult = mysqli_query($conn, "SELECT theme_preference FROM users WHERE email = '$email'");
@@ -53,13 +53,16 @@ $numberDrivers = $driversQuery ? mysqli_fetch_row($driversQuery)[0] : 0;
 <head>
     <meta charset="UTF-8">
     <script>
-        (function() {
-            const savedTheme = <?= json_encode($theme['theme_preference'] ?? 'light'); ?>;
-            if (savedTheme === 'dark') {
-                document.documentElement.classList.add('dark-theme');
-                document.documentElement.classList.add('dark');
-            }
-        })();
+        let savedTheme = null;
+        <?php if ($isGuest): ?>
+            savedTheme = localStorage.getItem("f1-theme");
+        <?php else: ?>
+            savedTheme = <?= json_encode($theme['theme_preference']); ?>;
+        <?php endif; ?>
+        if (savedTheme == 'dark') {
+            document.documentElement.classList.add('dark-theme');
+            document.documentElement.classList.add('dark');
+        }
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <title>F1 Dashboard</title>
@@ -78,15 +81,15 @@ $numberDrivers = $driversQuery ? mysqli_fetch_row($driversQuery)[0] : 0;
             <div class="logo-text">F1 Dashboard</div>
         </div>
         <?php if ($isGuest): ?>
-        <div class="user-badge">
-            <i class="fas fa-user"></i>
-            <span><?= htmlspecialchars($userName) ?></span>
-        </div>
+            <div class="user-badge">
+                <i class="fas fa-user"></i>
+                <span><?= htmlspecialchars($userName) ?></span>
+            </div>
         <?php else: ?>
-        <div class="user-badge" onclick="window.location.href='../UserEdit/userOptions.php'">
-            <i class="fas fa-user"></i>
-            <span><?= htmlspecialchars($userName) ?></span>
-        </div>
+            <div class="user-badge" onclick="window.location.href='../UserEdit/userOptions.php'">
+                <i class="fas fa-user"></i>
+                <span><?= htmlspecialchars($userName) ?></span>
+            </div>
         <?php endif; ?>
     </div>
 
@@ -132,11 +135,10 @@ $numberDrivers = $driversQuery ? mysqli_fetch_row($driversQuery)[0] : 0;
         </div>
 
         <?php if ($isGuest): ?>
-        <div class="timer-warning">
-            <i class="fas fa-hourglass-half"></i>
-            <strong>Guest Access:</strong> You have <span id="timer"><?= max(0, $remaining) ?></span> seconds remaining. 
-            <a href="../index.php" style="color: var(--primary-red);">Login</a> or <a href="../index.php?guest=1" style="color: var(--primary-red);">extend guest session</a> for full access.
-        </div>
+            <div class="timer-warning">
+                <i class="fas fa-hourglass-half"></i>
+                <strong>Guest Access:</strong> You have <span id="timer"><?= max(0, $remaining) ?></span> seconds remaining.
+            </div>
         <?php endif; ?>
 
         <!-- Welcome Section -->
@@ -181,7 +183,7 @@ $numberDrivers = $driversQuery ? mysqli_fetch_row($driversQuery)[0] : 0;
             </div>
         </div>
     </div>
-    
+
     <!-- Footer -->
     <footer>
         <div class="footer-container">
@@ -199,22 +201,22 @@ $numberDrivers = $driversQuery ? mysqli_fetch_row($driversQuery)[0] : 0;
             </div>
         </div>
     </footer>
-    
+
     <script>
         // Guest timer
         <?php if ($isGuest): ?>
-        let timeLeft = <?= max(0, $remaining) ?>;
-        const timer = setInterval(() => {
-            if (timeLeft > 0) {
-                timeLeft--;
-                document.getElementById("timer").textContent = timeLeft;
-            }
-            if (timeLeft <= 0) {
-                clearInterval(timer);
-                alert('Your guest session has expired. Please login to continue.');
-                window.location.href = "../index.php";
-            }
-        }, 1000);
+            let timeLeft = <?= max(0, $remaining) ?>;
+            const timer = setInterval(() => {
+                if (timeLeft > 0) {
+                    timeLeft--;
+                    document.getElementById("timer").textContent = timeLeft;
+                }
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    alert('Your guest session has expired. Please login to continue.');
+                    window.location.href = "../index.php";
+                }
+            }, 1000);
         <?php endif; ?>
 
         async function loadStats() {
@@ -273,19 +275,19 @@ $numberDrivers = $driversQuery ? mysqli_fetch_row($driversQuery)[0] : 0;
                     `);
                 });
         }
-        
+
         // Load latest race results
         async function loadLatestRace() {
             const currentYear = new Date().getFullYear();
-            
+
             try {
                 const res = await fetch(`https://api.jolpi.ca/ergast/f1/current/last/results.json`);
                 if (!res.ok) throw new Error('Network response was not ok');
-                
+
                 const data = await res.json();
-                
+
                 const race = data.MRData.RaceTable.Races[0];
-                
+
                 if (!race || !race.Results || race.Results.length === 0) {
                     $('#latestRaceContainer').html(`
                         <div class="race-card">
@@ -299,11 +301,13 @@ $numberDrivers = $driversQuery ? mysqli_fetch_row($driversQuery)[0] : 0;
                     `);
                     return;
                 }
-                
+
                 const date = new Date(race.date).toLocaleDateString('en-US', {
-                    year: 'numeric', month: 'long', day: 'numeric'
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
                 });
-                
+
                 let resultsHtml = `
                     <div class="race-card">
                         <div class="race-header">
@@ -336,15 +340,15 @@ $numberDrivers = $driversQuery ? mysqli_fetch_row($driversQuery)[0] : 0;
                                     </thead>
                                     <tbody>
                 `;
-                
+
                 for (let r of race.Results.slice(0, 10)) {
                     let cls = '';
                     if (r.position === '1') cls = 'position-1';
                     else if (r.position === '2') cls = 'position-2';
                     else if (r.position === '3') cls = 'position-3';
-                    
+
                     let timeOrStatus = r.Time ? r.Time.time : (r.status || 'DNF');
-                    
+
                     resultsHtml += `
                         <tr class="${cls}">
                             <td><strong>${escapeHtml(r.position)}</strong></td>
@@ -355,7 +359,7 @@ $numberDrivers = $driversQuery ? mysqli_fetch_row($driversQuery)[0] : 0;
                         </tr>
                     `;
                 }
-                
+
                 resultsHtml += `
                                     </tbody>
                                 </table>
@@ -363,10 +367,10 @@ $numberDrivers = $driversQuery ? mysqli_fetch_row($driversQuery)[0] : 0;
                         </div>
                     </div>
                 `;
-                
+
                 $('#latestRaceContainer').html(resultsHtml);
-                
-            } catch(e) {
+
+            } catch (e) {
                 console.error('Error loading race results:', e);
                 $('#latestRaceContainer').html(`
                     <div class="race-card">
@@ -380,7 +384,7 @@ $numberDrivers = $driversQuery ? mysqli_fetch_row($driversQuery)[0] : 0;
                 `);
             }
         }
-        
+
         // Helper function to escape HTML
         function escapeHtml(str) {
             if (!str) return '';
@@ -391,7 +395,7 @@ $numberDrivers = $driversQuery ? mysqli_fetch_row($driversQuery)[0] : 0;
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#39;');
         }
-        
+
         $(document).ready(function() {
             loadStats();
             loadLatestRace();

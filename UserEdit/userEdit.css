@@ -1,30 +1,73 @@
 :root {
+    --primary-red: #e10600;
+    --primary-red-dark: #b00500;
+    --primary-red-light: #ff4d3b;
+    --gold: #ffd700;
+    --gold-dark: #cca800;
+    --gold-light: #ffe44d;
+
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8f9fa;
+    --bg-tertiary: #f1f3f5;
+    --text-primary: #1a1a2e;
+    --text-secondary: #6c757d;
+    --text-muted: #adb5bd;
+    --border-light: #e9ecef;
+    --border-medium: #dee2e6;
+    
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --shadow-xl: 0 12px 36px rgba(0, 0, 0, 0.16);
+    
+    --glass-bg: rgba(255, 255, 255, 0.9);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    
     --bg-color: #ffffff;
     --border-color: #dddddd;
     --card-bg: #f8f9fa;
     --dark-gold: #b8860b;
     --dark-red: #8b0000;
     --dashboard-bg: #f1f1f1;
-    --gold: #ffd700;
-    --header-bg: #f1f1f1;
+    --header-bg: #ffffff;
     --light-gold: #fffacd;
     --light-red: #ff3b30;
-    --primary-red: #e10600;
-    --shadow-color: rgba(0, 0, 0, 0.1);
+    --nav-icon-gold: var(--gold);
+    --nav-icon-red: var(--primary-red);
     --text-color: #333333;
-    --success-green: #27ae60;
-    --error-red: #e74c3c;
-    --warning-orange: #f39c12;
+    --nav-btn-padding: 14px 10px;
 }
 
 .dark-theme {
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #141414;
+    --bg-tertiary: #1f1f1f;
+    --text-primary: #f8f9fa;
+    --text-secondary: #ced4da;
+    --text-muted: #6c757d;
+    --border-light: #2a2a2a;
+    --border-medium: #3a3a3a;
+    
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
+    --shadow-xl: 0 12px 36px rgba(0, 0, 0, 0.5);
+    
+    --glass-bg: rgba(20, 20, 20, 0.95);
+    --glass-border: rgba(255, 255, 255, 0.05);
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    
     --bg-color: #121212;
     --border-color: #444444;
-    --card-bg: #1e1e1e;
+    --card-bg: #121212;
     --dashboard-bg: #2c3e50;
-    --header-bg: #2a2a2a;
-    --shadow-color: rgba(0, 0, 0, 0.5);
+    --header-bg: #1c1c1c;
     --text-color: #f1f1f1;
+    --dark-gold: #ffd700;
+    --dark-red: #ff3b30;
+    --light-gold: #2a2a00;
+    --light-red: #3a0000;
 }
 
 * {
@@ -40,17 +83,20 @@ body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
     min-height: 100vh;
-    padding: 20px;
 }
 
 /* HEADER & LOGO */
 .header {
-    align-items: center;
-    border-bottom: 3px solid var(--primary-red);
     display: flex;
+    align-items: center;
     justify-content: space-between;
-    margin-bottom: 30px;
-    padding-bottom: 20px;
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--primary-red);
+    padding: 16px 32px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: var(--shadow-sm);
 }
 
 .logo {
@@ -69,16 +115,14 @@ body {
 }
 
 .logo-text {
-    background: linear-gradient(to right, var(--primary-red) 50%, var(--gold) 50%);
+    font-size: 24px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary-red) 0%, var(--gold) 100%);
     background-clip: text;
     -webkit-background-clip: text;
     color: transparent;
-    font-size: 2rem;
-    font-weight: 900;
-    letter-spacing: 1px;
-    text-transform: uppercase;
+    letter-spacing: -0.5px;
     margin-left: 10px;
-    line-height: 1;
 }
 
 .header-right {
@@ -454,6 +498,9 @@ textarea {
         margin: 0 auto;
         width: 100%;
     }
+    .user-badge{
+        display: none;
+    }
 }
 
 @media (max-width: 768px) {
@@ -498,10 +545,6 @@ textarea {
 }
 
 @media (max-width: 480px) {
-    body {
-        padding: 15px;
-    }
-
     .logo-text {
         font-size: 1.6rem;
     }

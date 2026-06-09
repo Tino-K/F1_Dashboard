@@ -46,14 +46,17 @@ $userName = $_SESSION['name'] ?? 'Guest';
 
 <head>
     <meta charset="UTF-8">
-    <script>
-        (function() {
-            const savedTheme = <?= json_encode($theme['theme_preference'] ?? 'light'); ?>;
-            if (savedTheme === 'dark') {
-                document.documentElement.classList.add('dark-theme');
-                document.documentElement.classList.add('dark');
-            }
-        })();
+        <script>
+        let savedTheme = null;
+        <?php if ($isGuest): ?>
+            savedTheme = localStorage.getItem("f1-theme");
+        <?php else: ?>
+            savedTheme = <?= json_encode($theme['theme_preference']); ?>;
+        <?php endif; ?>
+        if (savedTheme == 'dark') {
+            document.documentElement.classList.add('dark-theme');
+            document.documentElement.classList.add('dark');
+        }
     </script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.1/jquery.min.js"></script>
     <title>F1 Dashboard | Races</title>

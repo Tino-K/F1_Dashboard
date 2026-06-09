@@ -39,7 +39,7 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background-image: 
+    background-image:
         radial-gradient(circle at 20% 80%, rgba(225, 6, 0, 0.05) 0%, transparent 20%),
         radial-gradient(circle at 80% 20%, rgba(255, 215, 0, 0.05) 0%, transparent 20%);
 }
@@ -75,14 +75,13 @@ header {
 }
 
 .logo-text {
-    font-size: 2rem;
-    font-weight: 900;
-    background: linear-gradient(to right, var(--primary-red) 50%, var(--gold) 50%);
-    -webkit-background-clip: text;
+    font-size: 24px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary-red) 0%, var(--gold) 100%);
     background-clip: text;
+    -webkit-background-clip: text;
     color: transparent;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: -0.5px;
 }
 
 .logo-subtitle {
@@ -279,6 +278,7 @@ header {
         opacity: 0;
         transform: translateY(10px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
@@ -309,6 +309,7 @@ header {
 .form-group {
     position: relative;
     margin-bottom: 20px;
+    background-color: var(--bg-color);
 }
 
 .form-group i {
@@ -320,7 +321,7 @@ header {
     z-index: 2;
 }
 
-.form-group textarea + i {
+.form-group textarea+i {
     top: 20px;
     transform: none;
 }
@@ -352,8 +353,8 @@ header {
     box-shadow: 0 0 0 3px rgba(225, 6, 0, 0.1);
 }
 
-.form-group input:focus + i,
-.form-group textarea:focus + i {
+.form-group input:focus+i,
+.form-group textarea:focus+i {
     color: var(--primary-red);
 }
 

@@ -9,18 +9,9 @@ if (!isset($_SESSION['email']) || !isset($_SESSION['role']) || $_SESSION['role']
 
 require_once "../config.php";
 
-// Trenutni admin email i tema - with better error handling
-$email = $_SESSION['email'] ?? null;
-
-// Only try to get theme if email exists
-$theme = ['theme_preference' => 'light']; // Default theme
-if ($email) {
-    $email_escaped = mysqli_real_escape_string($conn, $email);
-    $themeQuery = mysqli_query($conn, "SELECT theme_preference FROM users WHERE email = '$email_escaped'");
-    if ($themeQuery && mysqli_num_rows($themeQuery) > 0) {
-        $theme = mysqli_fetch_assoc($themeQuery);
-    }
-}
+//Theme
+$email = $_SESSION['email'];
+$theme = mysqli_fetch_assoc(mysqli_query($conn, "SELECT users.theme_preference FROM users WHERE users.email = '$email'"));
 
 // Handle POST requests FIRST before any HTML output
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -45,10 +36,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 // Dohvat svih zahtjeva (JOIN s users tablicom za username)
 $requestsQuery = "
-    SELECT r.*, u.name AS user_name
-    FROM requests r
-    LEFT JOIN users u ON r.email = u.email
-    ORDER BY r.id DESC
+    SELECT *
+    FROM requests 
+    ORDER BY id DESC
 ";
 $requestsResult = mysqli_query($conn, $requestsQuery);
 $totalRequests = $requestsResult ? mysqli_num_rows($requestsResult) : 0;
@@ -161,7 +151,6 @@ $totalRequests = $requestsResult ? mysqli_num_rows($requestsResult) : 0;
             <table id="requestsTable">
                 <thead>
                     <tr>
-                        <th>ID</th>
                         <th>Guest</th>
                         <th>Text</th>
                         <th>Email</th>
@@ -178,7 +167,6 @@ $totalRequests = $requestsResult ? mysqli_num_rows($requestsResult) : 0;
                         while ($row = mysqli_fetch_assoc($requestsResult)): 
                     ?>
                         <tr data-id="<?= $row['id'] ?>" data-guest="<?= $row['Guest'] ?>" data-taken="<?= htmlspecialchars($row['taken'] ?? 'pending') ?>">
-                            <td><?= htmlspecialchars($row['id']) ?></td>
                             <td>
                                 <?php if (isset($row['Guest']) && $row['Guest'] == 1): ?>
                                     <span class="guest-badge"><i class="fas fa-user-secret"></i> Guest</span>
@@ -187,8 +175,8 @@ $totalRequests = $requestsResult ? mysqli_num_rows($requestsResult) : 0;
                                 <?php endif; ?>
                             </td>
                             <td class="text-cell"><?= htmlspecialchars(substr($row['Text'] ?? '', 0, 100)) . ((isset($row['Text']) && strlen($row['Text']) > 100) ? '...' : '') ?></td>
-                            <td class="email-cell"><?= htmlspecialchars($row['email'] ?? 'N/A') ?></td>
-                            <td><?= htmlspecialchars($row['user_name'] ?? 'N/A') ?></td>
+                            <td class="email-cell"><?= htmlspecialchars($row['Email'] ?? 'N/A') ?></td>
+                            <td><?= htmlspecialchars($row['name'] ?? 'N/A') ?></td>
                             <td class="status-cell">
                                 <?php if (isset($row['taken']) && $row['taken'] == 'taken'): ?>
                                     <span class="status-badge status-taken"><i class="fas fa-check-circle"></i> Taken</span>
